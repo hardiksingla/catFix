@@ -1,0 +1,64 @@
+<!-- templates/inspections/step1.html -->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Image Upload Field -->
+    <label for="image">Upload Image:</label>
+    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+    
+    <!-- Image Preview -->
+    <div>
+        <img id="image-preview" src="" alt="Image Preview" style="display:none; max-width: 100%; height: auto;">
+    </div>
+    
+    <!-- Process Button -->
+    <button type="button" onclick="processImage()">Process</button>
+    
+    <!-- Next Button -->
+    <button type="submit">Next</button>
+</form>
+
+<!-- Display Extracted Text -->
+<div id="extracted-text"></div>
+
+<script>
+    // Function to Preview Image
+    function previewImage(event) {
+        const imagePreview = document.getElementById('image-preview');
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function() {
+            imagePreview.src = reader.result;
+            imagePreview.style.display = 'block';
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Function to Process Image
+    async function processImage() {
+        const imageInput = document.getElementById('image');
+        const file = imageInput.files[0];
+        if (!file) {
+            alert('Please upload an image first.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch('{% url "process_image" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const result = await response.json();
+        document.getElementById('extracted-text').innerText = result.text;
+    }
+</script>

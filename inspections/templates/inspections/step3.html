@@ -1,0 +1,23 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ image_form.as_p }}
+    {{ signature_form.as_p }}
+    {{ text_form.as_p }}
+    
+    <!-- Hidden fields to capture latitude and longitude -->
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+</script>
