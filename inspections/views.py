@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from .forms import ImageForm
-import requests
+from PIL import Image
+from pyzbar.pyzbar import decode
 
 def inspection_view(request):
     if request.method == 'POST':
@@ -61,34 +62,24 @@ def step5(request):
 def step6(request):
     return render(request, 'inspections/step6.html')
 
-def get_api_key():
-    with open('api.txt', 'r') as file:
-        return file.read().strip()
-
-# Replace 'your_api_key_here' with your actual OCRSpace API key
-OCR_API_URL = 'https://api.ocr.space/parse/imageurl'
-
-# View to process the image
 @csrf_exempt
 def process_image(request):
     if request.method == 'POST':
         image_file = request.FILES.get('image')
         if image_file:
-            # Prepare the files and data for the API request
-            files = {'file': image_file}
-            payload = {
-                'apikey': get_api_key(),
-                'language': 'eng',  # Change this if you need another language
-            }
+            # Open the image using PIL
+            image = Image.open(image_file)
 
-            # Send POST request to the OCRSpace API
-            response = requests.post(OCR_API_URL, files=files, data=payload)
-            result = response.json()
+            # Decode barcodes from the image using pyzbar
+            decoded_objects = decode(image)
+            barcode_values = [obj.data.decode('utf-8') for obj in decoded_objects]
 
-            # Extract the OCR text from the response
-            parsed_text = result['ParsedResults'][0]['ParsedText'] if 'ParsedResults' in result else ''
-            return JsonResponse({'text': parsed_text})
+            if barcode_values:
+                # Save the first detected barcode in the session
+                request.session['barcode_string'] = barcode_values[0]
+                return JsonResponse({'text': ', '.join(barcode_values)})
+            else:
+                return JsonResponse({'text': 'No barcodes detected.'})
         else:
             return JsonResponse({'error': 'No image provided'}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
-

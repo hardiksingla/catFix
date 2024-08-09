@@ -1,7 +1,0 @@
-<!-- templates/inspections/step6.html -->
-<p>Your inspection has been processed. The results are as follows:</p>
-<textarea readonly>{{ response }}</textarea>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Download PDF</button>
-</form>
