@@ -50,7 +50,7 @@
         const formData = new FormData();
         formData.append('image', file);
 
-        const response = await fetch('{% url "process_image" %}', {
+        const response = await fetch("{% url 'process_image' %}", {
             method: 'POST',
             body: formData,
             headers: {
@@ -58,7 +58,11 @@
             }
         });
 
-        const result = await response.json();
-        document.getElementById('extracted-text').innerText = result.text;
+        if (response.ok) {
+            const result = await response.json();
+            document.getElementById('extracted-text').innerText = result.text;
+        } else {
+            document.getElementById('extracted-text').innerText = 'An error occurred while processing the image.';
+        }
     }
 </script>
