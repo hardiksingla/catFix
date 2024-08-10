@@ -143,6 +143,111 @@ def gemini_summarize_api(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+@csrf_exempt  # Exempt this view from CSRF validation
+def gemini_summarize_battery(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            api_key = data.get('api_key')  # Retrieve the API key sent from the front-end
+            text = data.get('text')
+
+            # Validate the presence of the API key and text
+            if not api_key:
+                return JsonResponse({'error': 'API key is missing'}, status=400)
+            if not text:
+                return JsonResponse({'error': 'No text provided'}, status=400)
+
+            # Set the API key for Google Gemini
+            genai.configure(api_key=api_key)
+
+            # Use the Google Gemini API to generate a summary for battery information
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(f"""
+                The given text is what a user is telling about the battery of their CAT vehicle: {text}.
+                Summarize the text to fit the following format:
+                ▪ Battery Make: (Example CAT, ABC, XYZ, etc.)
+                ▪ Battery Replacement Date: (in yyyy-MM-dd format)
+                ▪ Battery Voltage: (numeric value, e.g., 12V / 13V)
+                ▪ Battery Water Level: (Good, Ok or Low)
+                ▪ Condition of Battery (Damage): (Put Y if there is any damage, else N)
+                ▪ Any Leak/Rust in Battery: (Put Y if there is no leak or rust, else N)
+                ▪ Battery Overall Summary: (<1000 characters)
+
+                If the text is not relevant to battery inspection, respond with "NOT RELEVANT TEXT".
+            """)
+
+            # Handle the response from the API
+            if response and "NOT RELEVANT TEXT" in response.text:
+                return JsonResponse({'error': 'NOT RELEVANT TEXT'}, status=400)
+            elif response:
+                summary = response.text
+                return JsonResponse({'summary': summary})
+            else:
+                return JsonResponse({'error': 'Failed to generate summary'}, status=500)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON provided'}, status=400)
+        except Exception as e:
+            # Catch any other exceptions that may occur
+            return JsonResponse({'error': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+import base64
+import io
+
+
+# Exterior Inspection
+
+@csrf_exempt
+def gemini_summarize_exterior(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            api_key = data.get('api_key')  # Retrieve the API key sent from the front-end
+            text = data.get('text')
+
+            # Validate the presence of the API key and text
+            if not api_key:
+                return JsonResponse({'error': 'API key is missing'}, status=400)
+            if not text:
+                return JsonResponse({'error': 'No text provided'}, status=400)
+
+            # Set the API key for Google Gemini
+            genai.configure(api_key=api_key)
+
+            # Use the Google Gemini API to generate a summary
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(f"""
+                The given text is what a user is telling about the exterior of their CAT vehicle: {text}.
+                Summarize the text to fit the following format:
+                ▪ Rust, Dent or Damage to Exterior: (say Y if any rust, dust or damage is present else N, EXPLAIN ONLY IF Y)
+                ▪ Oil leak in Suspension: (just put Y if there is any leak else N. DO NOT EXPLAIN)
+                ▪ Overall Summary: (<1000 characters)
+
+                If the text is not relevant to any exterior inspection, respond with "NOT RELEVANT TEXT".
+            """)
+
+            # Handle the response from the API
+            if response and "NOT RELEVANT TEXT" in response.text:
+                return JsonResponse({'error': 'NOT RELEVANT TEXT'}, status=400)
+            elif response:
+                summary = response.text
+                return JsonResponse({'summary': summary})
+            else:
+                return JsonResponse({'error': 'Failed to generate summary'}, status=500)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON provided'}, status=400)
+        except Exception as e:
+            # Catch any other exceptions that may occur
+            return JsonResponse({'error': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 
 @csrf_exempt  # Exempt this view from CSRF validation
 def gemini_process_issue(request):
@@ -270,7 +375,6 @@ def verify_signup(username, email, password):
 
 
 from .models import User
-from django.shortcuts import render, redirect
 
 def save_signup_data(username,password,email):
         # Save data to MongoDB
@@ -278,5 +382,94 @@ def save_signup_data(username,password,email):
         inspection.save()
 
         
-    
+
+# Data from Tires
+@csrf_exempt
+def submit_tire_data(request):
+    if request.method == 'POST':
+        try:
+            # Extract data from request
+            pressure_left_front = request.POST.get('pressure-left-front')
+            pressure_right_front = request.POST.get('pressure-right-front')
+            condition_left_front = request.POST.get('condition-left-front')
+            condition_right_front = request.POST.get('condition-right-front')
+            pressure_left_rear = request.POST.get('pressure-left-rear')
+            pressure_right_rear = request.POST.get('pressure-right-rear')
+            condition_left_rear = request.POST.get('condition-left-rear')
+            condition_right_rear = request.POST.get('condition-right-rear')
+            tire_summary = request.POST.get('tire-summary')
+            api_key = request.POST.get('api_key')
+
+            images = {
+                'left_front': request.POST.get('image-left-front'),
+                'right_front': request.POST.get('image-right-front'),
+                'left_rear': request.POST.get('image-left-rear'),
+                'right_rear': request.POST.get('image-right-rear')
+            }
+
+            # Process the data (e.g., send to Gemini, store in DB, etc.)
+
+            # Return success response
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt  # Exempt this view from CSRF validation
+def submit_battery_data(request):
+    if request.method == 'POST':
+        try:
+            api_key = request.POST.get('api_key')
+            battery_make = request.POST.get('battery-make')
+            replacement_date = request.POST.get('replacement-date')
+            voltage = request.POST.get('battery-voltage')
+            water_level = request.POST.get('battery-water-level')
+            damage = request.POST.get('battery-damage')
+            leak_rust = request.POST.get('leak-rust')
+            overall_summary = request.POST.get('battery-summary')
+
+            # Process images
+            images = {
+                'damage_image': request.FILES.get('image-damage'),
+                'leak_rust_image': request.FILES.get('image-leak-rust')
+            }
+
+            # Process the data (e.g., send to Gemini, store in DB, etc.)
+
+            # Return success response
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def submit_exterior_data(request):
+    if request.method == 'POST':
+        try:
+            # Extract data from request
+            rust_damage = request.POST.get('rust-damage')
+            oil_leak = request.POST.get('oil-leak')
+            exterior_summary = request.POST.get('exterior-summary')
+            api_key = request.POST.get('api_key')
+
+            images = {
+                'rust_damage': request.POST.get('image-rust-damage'),
+                'oil_leak': request.POST.get('image-oil-leak')
+            }
+
+            # Process the data (e.g., send to Gemini, store in DB, etc.)
+
+            # Return success response
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
