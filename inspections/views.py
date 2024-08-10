@@ -49,20 +49,17 @@ def step1(request):
     form = ImageForm()
     return render(request, 'inspections/step1.html', {'form': form})
 
+def login(request):
+    return render(request, 'inspections/login.html')
+
+def signup(request):
+    return render(request, 'inspections/signup.html')
+
 def step2(request):
     return render(request, 'inspections/step2.html')
 
-def step3(request):
-    return render(request, 'inspections/step3.html')
-
-def step4(request):
-    return render(request, 'inspections/step4.html')
-
-def step5(request):
-    return render(request, 'inspections/step5.html')
-
-def step6(request):
-    return render(request, 'inspections/step6.html')
+def menu(request):
+    return render(request, 'inspections/menu.html')
 
 @csrf_exempt
 def process_image(request):
