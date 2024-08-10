@@ -11,38 +11,6 @@ from pyzbar.pyzbar import decode
 import json
 import google.generativeai as genai
 
-def inspection_view(request):
-    if request.method == 'POST':
-        image_form = ImageForm(request.POST, request.FILES)
-        signature_form = SignatureForm(request.POST, request.FILES)
-        text_form = TextForm(request.POST)
-
-        if all([image_form.is_valid(), signature_form.is_valid(), text_form.is_valid()]):
-            # Save the forms
-            inspection = text_form.save(commit=False)
-            inspection.image = image_form.cleaned_data['image']
-            inspection.signature = signature_form.cleaned_data['signature']
-
-            # Capture user's location (latitude and longitude)
-            latitude = float(request.POST.get('latitude'))
-            longitude = float(request.POST.get('longitude'))
-            inspection.latitude = latitude
-            inspection.longitude = longitude
-
-            inspection.save()
-            return redirect('success_url')  # Redirect to a success page
-    else:
-        image_form = ImageForm()
-        signature_form = SignatureForm()
-        text_form = TextForm()
-
-    return render(request, 'inspection_form.html', {
-        'image_form': image_form,
-        'signature_form': signature_form,
-        'text_form': text_form,
-    })
-
-
 from django.shortcuts import render
 
 def step1(request):
