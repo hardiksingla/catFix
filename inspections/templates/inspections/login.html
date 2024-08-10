@@ -97,6 +97,12 @@
             text-decoration: underline;
         }
 
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
         /* Full-screen container only for mobile view */
         @media (max-width: 600px) {
             body {
@@ -121,7 +127,13 @@
         <header>
             CAT<span>FIX</span>
         </header>
-        <form id="loginForm">
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form action="{% url 'login' %}" method="POST" id="loginForm">
+            {% csrf_token %}
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter your username" required>
 
@@ -130,18 +142,11 @@
 
             <button type="submit">Login</button>
         </form>
+
         <div class="signup-link">
-            <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
         </div>
     </div>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            // Handle form submission logic here (e.g., validate credentials, send to server)
-            alert('Login submitted!');
-        });
-    </script>
 </body>
 
 </html>

@@ -17,14 +17,23 @@ def step1(request):
     form = ImageForm()
     return render(request, 'inspections/step1.html', {'form': form})
 
-def login(request):
-    return render(request, 'inspections/login.html')
-
 def signup(request):
     return render(request, 'inspections/signup.html')
 
 def step2(request):
     return render(request, 'inspections/step2.html')
+
+def step3(request):
+    return render(request, 'inspections/step3.html')
+
+def step4(request):
+    return render(request, 'inspections/step4.html')
+
+def step5(request):
+    return render(request, 'inspections/step5.html')
+
+def step6(request):
+    return render(request, 'inspections/step6.html')
 
 def menu(request):
     return render(request, 'inspections/menu.html')
@@ -51,7 +60,7 @@ def process_image(request):
             return JsonResponse({'error': 'No image provided'}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-genai.configure(api_key="AIzaSyByoWksAxsGmVPJb2vNBUIcAvTuMUvu_G0")  # Replace with your actual API key
+# genai.configure(api_key="AIzaSyBqWY9bCR7lsM7uSFrHleq9YaU9BzBPU2c")  # Replace with your actual API key
 
 @csrf_exempt
 def gemini_summarize_api(request):
@@ -95,3 +104,35 @@ def gemini_summarize_api(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        
+        if verify_login(username, password):
+            return redirect('step1')
+        else:
+            return render(request, 'inspections/login.html', {'error': 'Invalid credentials'})
+
+    return render(request, 'inspections/login.html')
+
+def verify_login(username, password):
+    return True
+
+def signup_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        
+        if verify_signup(username, email, password):
+            return redirect('step1')
+        else:
+            return render(request, 'inspections/signup.html', {'error': 'Invalid credentials'})
+
+    return render(request, 'inspections/signup.html')
+
+def verify_signup(username, email, password):
+    return True

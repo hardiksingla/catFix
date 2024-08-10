@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,30 +56,33 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="menu-container">
-    <div class="menu-item">
-        <img src="https://img.icons8.com/external-smashingstocks-flat-smashing-stocks/66/000000/external-tire-tires-wheels-smashingstocks-flat-smashing-stocks.png" alt="Tires Icon">
-        <p>Tires</p>
+    <div class="menu-container">
+        <a href="{% url 'step2' %}" class="menu-item">
+            <img src="https://img.icons8.com/external-smashingstocks-flat-smashing-stocks/66/000000/external-tire-tires-wheels-smashingstocks-flat-smashing-stocks.png"
+                alt="Tires Icon">
+            <p>Tires</p>
+        </a>
+        <a href="{% url 'step3' %}" class="menu-item">
+            <img src="https://img.icons8.com/fluency/66/000000/car-battery.png" alt="Battery Icon">
+            <p>Battery</p>
+        </a>
+        <a href="{% url 'step4' %}" class="menu-item">
+            <img src="https://img.icons8.com/color/66/000000/car.png" alt="Exterior Icon">
+            <p>Exterior</p>
+        </a>
+        <a href="{% url 'step5' %}" class="menu-item">
+            <img src="https://img.icons8.com/color/66/000000/brake-disc.png" alt="Brakes Icon">
+            <p>Brakes</p>
+        </a>
+        <a href="{% url 'step6' %}" class="menu-item">
+            <img src="https://img.icons8.com/fluency/66/000000/engine.png" alt="Engine Icon">
+            <p>Engine</p>
+        </a>
     </div>
-    <div class="menu-item">
-        <img src="https://img.icons8.com/fluency/66/000000/car-battery.png" alt="Battery Icon">
-        <p>Battery</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://img.icons8.com/color/66/000000/car.png" alt="Exterior Icon">
-        <p>Exterior</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://img.icons8.com/color/66/000000/brake-disc.png" alt="Brakes Icon">
-        <p>Brakes</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://img.icons8.com/fluency/66/000000/engine.png" alt="Engine Icon">
-        <p>Engine</p>
-    </div>
-</div>
 
 </body>
+
 </html>
