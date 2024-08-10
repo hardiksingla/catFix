@@ -42,8 +42,12 @@ urlpatterns = [
     path('gemini_process_issue/', views.gemini_process_issue, name='gemini_process_issue'),
     path('gemini_summarize_battery/', views.gemini_summarize_battery, name='gemini_summarize_battery'),
     path('gemini_summarize_exterior/', views.gemini_summarize_exterior, name='gemini_summarize_exterior'),
+    path('gemini_summarize_brake/', views.gemini_summarize_brake, name='gemini_summarize_brake'),
+    path('gemini_summarize_engine/', views.gemini_summarize_engine, name='gemini_summarize_engine'),
     path('save/', views.save_signup_data, name='save_signup_data'),
     path('submit_tire_data/', views.submit_tire_data, name='submit_tire_data'),
     path('submit_battery_data/', views.submit_battery_data, name='submit_battery_data'),
     path('submit_exterior_data/', views.submit_exterior_data, name='submit_exterior_data'),
+    path('submit_brake_data/', views.submit_brake_data, name='submit_brake_data'),
+    path('submit_engine_data/', views.submit_engine_data, name='submit_engine_data'),
 ]
