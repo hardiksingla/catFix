@@ -27,4 +27,5 @@ urlpatterns = [
     path('step5/', views.step5, name='step5'),
     path('step6/', views.step6, name='step6'),
     path('process-image/', views.process_image, name='process_image'),
+    path('gemini_summarize_api/', views.gemini_summarize_api, name='gemini_summarize_api'),
 ]

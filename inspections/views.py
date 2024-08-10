@@ -8,6 +8,8 @@ from django.shortcuts import render
 from .forms import ImageForm
 from PIL import Image
 from pyzbar.pyzbar import decode
+import json
+import google.generativeai as genai
 
 def inspection_view(request):
     if request.method == 'POST':
@@ -83,3 +85,32 @@ def process_image(request):
         else:
             return JsonResponse({'error': 'No image provided'}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+genai.configure(api_key="")  # Replace with your actual API key
+
+@csrf_exempt
+def gemini_summarize_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            text = data.get('text')
+
+            # Check if text is provided
+            if not text:
+                return JsonResponse({'error': 'No text provided'}, status=400)
+
+            # Use the Google Gemini API to generate a summary
+            model = genai.GenerativeModel('gemini-1.5-flash')
+
+            response = model.generate_content(f"Summarize the following text: {text}")
+
+            if response:
+                summary = response.text
+                return JsonResponse({'summary': summary})
+            else:
+                return JsonResponse({'error': 'Failed to generate summary'}, status=500)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
