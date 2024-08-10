@@ -74,22 +74,20 @@ WSGI_APPLICATION = 'inspection_app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-'''
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'fixit',  # This is the database name you want to use
         'CLIENT': {
-            'host': 'mongodb+srv://07hardiksingla:HtN8hSboxTYmdetV@cluster0.wuvbh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-            'username': '07hardiksingla',  # MongoDB Atlas username
-            'password': 'HtN8hSboxTYmdetV',  # MongoDB Atlas password
+            'host': 'postgresql://neondb_owner:Zfm4HK2JhMbi@ep-holy-bread-a5pr2my9.us-east-2.aws.neon.tech/neondb?sslmode=require',
             'authSource': 'admin',
             'authMechanism': 'SCRAM-SHA-1',
         }
