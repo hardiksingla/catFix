@@ -157,7 +157,14 @@ def login_view(request):
     return render(request, 'inspections/login.html')
 
 def verify_login(username, password):
-    return True
+    try:
+        user = User.objects.get(username=username)
+        if password == user.password:
+            return True
+    except User.DoesNotExist:
+        return False
+
+    return False
 
 from django.shortcuts import render, redirect
 
