@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #000000;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            border-left: 5px solid #FFCC00;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .rating-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px; /* Add spacing between stars */
+        }
+
+        .star {
+            font-size: 36px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+
+        .star.hovered {
+            color: #FFCC00;
+        }
+
+        .star.selected {
+            color: #FFCC00;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #000000;
+            border: 2px solid #000000;
+            border-radius: 4px;
+            resize: vertical;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #FFCC00;
+            color: #000000;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        header span {
+            color: #FFCC00;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 15px;
+                border-left: none;
+            }
+
+            header {
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        CAT<span>FIX</span>
+    </header>
+
+    <form method="post" action="{% url 'menu_cust' %}">
+        {% csrf_token %}
+
+        <!-- Rating Field -->
+        <label for="rating">Rate Us:</label>
+        <div class="rating-container">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+            <input type="hidden" name="rating" id="rating" value="" required>
+        </div>
+
+        <!-- Optional Feedback Field -->
+        <label for="feedback">Share Your Experience (Optional):</label>
+        <textarea id="feedback" name="feedback" rows="4" placeholder="Write your experience here..."></textarea>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Rating</button>
+    </form>
+
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                resetStars();
+                for (let i = 0; i <= index; i++) {
+                    stars[i].classList.add('hovered');
+                }
+            });
+
+            star.addEventListener('mouseout', () => {
+                resetStars();
+            });
+
+            star.addEventListener('click', () => {
+                ratingInput.value = index + 1;
+                for (let i = 0; i <= index; i++) {
+                    stars[i].classList.add('selected');
+                }
+            });
+        });
+
+        function resetStars() {
+            stars.forEach(star => star.classList.remove('hovered'));
+            stars.forEach(star => star.classList.remove('selected'));
+            const selectedValue = ratingInput.value;
+            if (selectedValue) {
+                for (let i = 0; i < selectedValue; i++) {
+                    stars[i].classList.add('selected');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

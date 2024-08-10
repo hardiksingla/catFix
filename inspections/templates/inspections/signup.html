@@ -61,6 +61,26 @@
             box-sizing: border-box;
         }
 
+        .user-type {
+            margin-bottom: 20px;
+        }
+
+        .user-type label {
+            font-weight: normal;
+            font-size: 16px;
+            margin-right: 15px; /* Add some space between radio buttons */
+        }
+
+        .user-type input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Space between radio button groups */
+        }
+
         button {
             width: 100%;
             padding: 10px;
@@ -117,6 +137,15 @@
 
             <label for="confirm_password">Confirm Password</label>
             <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <!-- User Type Radio Buttons -->
+            <div class="user-type">
+                <label for="user_type">I am a:</label>
+                <div class="radio-group">
+                    <label><input type="radio" id="customer" name="user_type" value="customer" required>Customer</label>
+                    <label><input type="radio" id="service_person" name="user_type" value="service_person">Service Person</label>
+                </div>
+            </div>
 
             <button type="submit">Sign Up</button>
         </form>
