@@ -24,6 +24,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         header {
@@ -57,6 +58,27 @@
             border: 2px solid #000000;
             border-radius: 4px;
             font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .user-type {
+            margin-bottom: 20px;
+        }
+
+        .user-type label {
+            font-weight: normal;
+            font-size: 16px;
+            margin-right: 15px; /* Add some space between radio buttons */
+        }
+
+        .user-type input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Space between radio button groups */
         }
 
         button {
@@ -97,7 +119,13 @@
         <header>
             CAT<span>FIX</span>
         </header>
-        <form id="signupForm">
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form action="{% url 'signup' %}" method="POST">
+            {% csrf_token %}
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
 
@@ -107,30 +135,24 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
 
-            <label for="confirm-password">Confirm Password</label>
-            <input type="password" id="confirm-password" name="confirm-password" required>
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <!-- User Type Radio Buttons -->
+            <div class="user-type">
+                <label for="user_type">I am a:</label>
+                <div class="radio-group">
+                    <label><input type="radio" id="customer" name="user_type" value="customer" required>Customer</label>
+                    <label><input type="radio" id="service_person" name="user_type" value="service_person">Service Person</label>
+                </div>
+            </div>
 
             <button type="submit">Sign Up</button>
         </form>
         <div class="login-link">
-            <p>Already have an account? <a href="login.html">Login</a></p>
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
         </div>
     </div>
-
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            // Handle form submission logic here (e.g., validate inputs, send to server)
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-            } else {
-                alert('Sign Up submitted!');
-            }
-        });
-    </script>
 </body>
 
 </html>

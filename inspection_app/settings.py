@@ -74,14 +74,27 @@ WSGI_APPLICATION = 'inspection_app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'fixit',  # This is the database name you want to use
+        'CLIENT': {
+            'host': 'mongodb+srv://ishanvisita:0jymL1uhDLSI7VoC@cluster0.pci0c.mongodb.net/fixit?retryWrites=true&w=majority&appName=Cluster0',
+            'username': 'ishanvisita',  # MongoDB Atlas username
+            'password': '0jymL1uhDLSI7VoC',  # MongoDB Atlas password
+            'authSource': 'admin',
+            'authMechanism': 'SCRAM-SHA-1',
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

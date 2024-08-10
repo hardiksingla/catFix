@@ -19,16 +19,26 @@ from django.http import HttpResponseRedirect
 from inspections import views
 
 urlpatterns = [
-    path('', lambda request: HttpResponseRedirect('login/')),  # Redirect root to step1
-    path('login/', views.login, name='login'),
-    path('signup/', views.signup, name='signup'),
+    path('', lambda request: HttpResponseRedirect('login/')),
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.signup_view, name='signup'),
     path('step1/', views.step1, name='step1'),
+    path('step1_cust/', views.step1_cust, name='step1_cust'),
     path('menu/', views.menu, name='menu'),
+    path('menu_cust/', views.menu_cust, name='menu_cust'),
     path('step2/', views.step2, name='step2'),
+    path('step2_cust/', views.step2_cust, name='step2_cust'),
     path('step3/', views.step3, name='step3'),
     path('step4/', views.step4, name='step4'),
     path('step5/', views.step5, name='step5'),
     path('step6/', views.step6, name='step6'),
+    path('service/', views.service, name='service'),
+    path('rate/', views.rate, name='rate'),
+    path('contact/', views.contact, name='contact'),
+    path('settings/', views.settings_view, name='settings'),
+    path('save-api-key/', views.settings_view, name='save_api_key'),
     path('process-image/', views.process_image, name='process_image'),
     path('gemini_summarize_api/', views.gemini_summarize_api, name='gemini_summarize_api'),
+
+    path('save/', views.save_signup_data, name='save_signup_data')
 ]

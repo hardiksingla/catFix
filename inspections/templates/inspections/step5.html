@@ -125,21 +125,21 @@
         CAT<span>FIX</span>
     </header>
 
-    <form method="post">
-        {% csrf_token %}
-        <div>
-            <button type="button" id="start-recording">Start Recording</button>
-            <button type="button" id="stop-recording" disabled>Stop Recording</button>
-        </div>
-        <div>
-            <h3>Captured Text:</h3>
-            <p id="captured-text">Start speaking to capture text...</p>
-        </div>
-        <div class="tire-info">
-            <p><span id="tire-summary"></span></p>
-        </div>
-        <button type="submit" id="next-button" disabled>Next</button>
-    </form>
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <button type="button" id="start-recording">Start Recording</button>
+        <button type="button" id="stop-recording" disabled>Stop Recording</button>
+    </div>
+    <div>
+        <h3>Captured Text:</h3>
+        <p id="captured-text">Start speaking to capture text...</p>
+    </div>
+    <div class="tire-info">
+        <p><span id="tire-summary"></span></p>
+    </div>
+    <button type="submit" id="next-button" disabled>Next</button>
+</form>
 
     <script>
         let finalTranscript = '';
@@ -196,20 +196,13 @@
         };
 
         function sendToGemini(text) {
-            const apiKey = localStorage.getItem('geminiApiKey');
-
-            if (!apiKey) {
-                console.error('API key not found.');
-                return;
-            }
-
             fetch("{% url 'gemini_summarize_api' %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}',
                 },
-                body: JSON.stringify({ text: text, api_key: apiKey }),  // Send text and API key
+                body: JSON.stringify({ text: text }),
             })
                 .then(response => response.json())
                 .then(data => {
@@ -219,9 +212,9 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        function populateTireInfo(summary) {
-            document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
-        }
+    function populateTireInfo(summary) {
+        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
+    }
 
         function extractInfo(text, label) {
             const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');

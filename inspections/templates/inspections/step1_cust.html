@@ -88,13 +88,6 @@
         color: #000000;
     }
 
-        #signature-pad {
-            margin-top: 20px;
-            border: 2px solid #FFCC00;
-            border-radius: 8px;
-            width: 100%;
-        }
-
         /* Header Styles */
         header {
             background-color: #000000;
@@ -175,86 +168,13 @@
 
         <!-- Signature Pad -->
         <div>
-            <label for="signature">Draw your signature:</label>
-            <canvas id="signature-pad" width="400" height="200"></canvas>
-            <input type="hidden" name="signature" id="signature-input">
-            <button type="button" onclick="saveSignature()">Save Signature</button>
             <button type="submit">Next</button>
         </div>
+
     </form>
 
     <script>
-        // Initialize variables for drawing on the canvas
-        let isDrawing = false;
-        let x = 0;
-        let y = 0;
-        const canvas = document.getElementById('signature-pad');
-        const context = canvas.getContext('2d');
-
-        // Adjust touch coordinates
-        function getTouchPos(canvasDom, touchEvent) {
-            const rect = canvasDom.getBoundingClientRect();
-            return {
-                x: touchEvent.touches[0].clientX - rect.left,
-                y: touchEvent.touches[0].clientY - rect.top
-            };
-        }
-
-        // Prevent scrolling while drawing
-        canvas.addEventListener('touchstart', e => {
-            e.preventDefault();
-            const touchPos = getTouchPos(canvas, e);
-            x = touchPos.x;
-            y = touchPos.y;
-            isDrawing = true;
-        });
-
-        canvas.addEventListener('touchmove', e => {
-            e.preventDefault();
-            if (isDrawing) {
-                const touchPos = getTouchPos(canvas, e);
-                context.beginPath();
-                context.moveTo(x, y);
-                context.lineTo(touchPos.x, touchPos.y);
-                context.stroke();
-                x = touchPos.x;
-                y = touchPos.y;
-            }
-        });
-
-        canvas.addEventListener('touchend', e => {
-            e.preventDefault();
-            isDrawing = false;
-            x = 0;
-            y = 0;
-        });
-
-        // Function to start drawing
-        canvas.addEventListener('mousedown', e => {
-            isDrawing = true;
-            x = e.offsetX;
-            y = e.offsetY;
-        });
-
-        // Function to stop drawing
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-            x = 0;
-            y = 0;
-        });
-
-        // Function to draw on the canvas
-        canvas.addEventListener('mousemove', e => {
-            if (isDrawing) {
-                context.beginPath();
-                context.moveTo(x, y);
-                context.lineTo(e.offsetX, e.offsetY);
-                context.stroke();
-                x = e.offsetX;
-                y = e.offsetY;
-            }
-        });
-
+        
         // Function to Preview Image
         function previewImage(event) {
             const imagePreview = document.getElementById('image-preview');
@@ -321,13 +241,6 @@
             } else {
                 document.getElementById('extracted-text').innerText = 'An error occurred while processing the image.';
             }
-        }
-
-        // Function to Save Signature
-        function saveSignature() {
-            var canvas = document.getElementById('signature-pad');
-            var signatureInput = document.getElementById('signature-input');
-            signatureInput.value = canvas.toDataURL();
         }
     </script>
 </body>

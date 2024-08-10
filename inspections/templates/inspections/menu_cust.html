@@ -53,6 +53,7 @@
             font-size: 18px;
             font-weight: bold;
             color: #000000;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -60,25 +61,21 @@
 <body>
 
     <div class="menu-container">
-        <a href="{% url 'step2' %}" class="menu-item">
-            <img src="https://img.icons8.com/?size=100&id=15173&format=png&color=000000" alt="Tires Icon">
-            <p>Tires</p>
+        <a href="{% url 'step1_cust' %}" class="menu-item">
+            <img src="https://img.icons8.com/?size=100&id=X2fWUHzkbgIv&format=png&color=000000" alt="Service Icon">
+            <p>Book a Service</p>
         </a>
-        <a href="{% url 'step3' %}" class="menu-item">
-            <img src="https://img.icons8.com/fluency/66/000000/car-battery.png" alt="Battery Icon">
-            <p>Battery</p>
+        <a href="{% url 'service' %}" class="menu-item">
+            <img src="https://img.icons8.com/?size=100&id=119655&format=png&color=000000" alt="Due date Icon">
+            <p>Check Service Due</p>
         </a>
-        <a href="{% url 'step4' %}" class="menu-item">
-            <img src="https://img.icons8.com/color/66/000000/car.png" alt="Exterior Icon">
-            <p>Exterior</p>
+        <a href="{% url 'rate' %}" class="menu-item">
+            <img src="https://img.icons8.com/?size=100&id=12195&format=png&color=000000" alt="Rate Icon">
+            <p>Rate Our Service</p>
         </a>
-        <a href="{% url 'step5' %}" class="menu-item">
-            <img src="https://img.icons8.com/?size=100&id=VqEB76ezChzF&format=png&color=000000" alt="Brakes Icon">
-            <p>Brakes</p>
-        </a>
-        <a href="{% url 'step6' %}" class="menu-item">
-            <img src="https://img.icons8.com/fluency/66/000000/engine.png" alt="Engine Icon">
-            <p>Engine</p>
+        <a href="{% url 'contact' %}" class="menu-item">
+            <img src="https://img.icons8.com/?size=100&id=hP6pCUyT8QGk&format=png&color=000000" alt="Issue Icon">
+            <p>Report an Issue</p>
         </a>
     </div>
 
