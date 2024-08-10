@@ -4,4 +4,3 @@ generativeai
 djongo
 requests
 pillow
-zbar
