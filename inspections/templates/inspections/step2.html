@@ -86,15 +86,7 @@
         <p id="captured-text">Start speaking to capture text...</p>
     </div>
     <div class="tire-info">
-        <p>▪ Tire Pressure for Left Front: <span id="tire-pressure-left-front"></span></p>
-        <p>▪ Tire Pressure for Right Front: <span id="tire-pressure-right-front"></span></p>
-        <p>▪ Tire Condition for Left Front: <span id="tire-condition-left-front"></span></p>
-        <p>▪ Tire Condition for Right Front: <span id="tire-condition-right-front"></span></p>
-        <p>▪ Tire Pressure for Left Rear: <span id="tire-pressure-left-rear"></span></p>
-        <p>▪ Tire Pressure for Right Rear: <span id="tire-pressure-right-rear"></span></p>
-        <p>▪ Tire Condition for Left Rear: <span id="tire-condition-left-rear"></span></p>
-        <p>▪ Tire Condition for Right Rear: <span id="tire-condition-right-rear"></span></p>
-        <p>▪ Overall Tire Summary: <span id="tire-summary"></span></p>
+        <p><span id="tire-summary"></span></p>
     </div>
     <button type="submit" id="next-button" disabled>Next</button>
 </form>
@@ -171,15 +163,7 @@
     }
 
     function populateTireInfo(summary) {
-        document.getElementById('tire-pressure-left-front').innerText = extractInfo(summary, 'Tire Pressure for Left Front');
-        document.getElementById('tire-pressure-right-front').innerText = extractInfo(summary, 'Tire Pressure for Right Front');
-        document.getElementById('tire-condition-left-front').innerText = extractInfo(summary, 'Tire Condition for Left Front');
-        document.getElementById('tire-condition-right-front').innerText = extractInfo(summary, 'Tire Condition for Right Front');
-        document.getElementById('tire-pressure-left-rear').innerText = extractInfo(summary, 'Tire Pressure for Left Rear');
-        document.getElementById('tire-pressure-right-rear').innerText = extractInfo(summary, 'Tire Pressure for Right Rear');
-        document.getElementById('tire-condition-left-rear').innerText = extractInfo(summary, 'Tire Condition for Left Rear');
-        document.getElementById('tire-condition-right-rear').innerText = extractInfo(summary, 'Tire Condition for Right Rear');
-        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);  // Assuming the overall summary is the first 1000 characters
+        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
     }
 
     function extractInfo(text, label) {

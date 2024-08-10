@@ -102,9 +102,25 @@ def gemini_summarize_api(request):
             # Use the Google Gemini API to generate a summary
             model = genai.GenerativeModel('gemini-1.5-flash')
 
-            response = model.generate_content(f"Summarize the following text: {text}")
+            response = model.generate_content(f"""
+                                                The given text is what a user is telling about his CAT vehicle tires.: {text}.
+                                                Summarize the text to fit the following format:
+                                                ▪ Tire Pressure for Left Front: (numeric value)
+                                                ▪ Tire Pressure for Right Front: (numeric value)
+                                                ▪ Tire Condition for Left Front: (Good, Ok, Needs Replacement)
+                                                ▪ Tire Condition for Right Front: (Good, Ok, Needs Replacement)
+                                                ▪ Tire Pressure for Left Rear: (numeric value)
+                                                ▪ Tire Pressure for Right Rear: (numeric value)
+                                                ▪ Tire Condition for Left Rear: (Good, Ok, Needs Replacement)
+                                                ▪ Tire Condition for Right Rear: (Good, Ok, Needs Replacement)
+                                                ▪ Overall Tire Summary: (<1000 characters)
 
-            if response:
+                                                If the text is not relevant to any tire inspection, respond with "NOT RELEVANT TEXT".
+                                            """)
+            if "NOT RELEVANT TEXT" in response:
+                print(response)
+                return JsonResponse({'error': 'NOT RELEVANT TEXT'}, status=400)
+            elif response:
                 summary = response.text
                 return JsonResponse({'summary': summary})
             else:
