@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'inspection_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fixit',  # The name of your PostgreSQL database
+        'NAME': 'neondb',  # The name of your PostgreSQL database
         'USER': 'neondb_owner',  # Your PostgreSQL username
         'PASSWORD': 'Zfm4HK2JhMbi',  # Your PostgreSQL password
         'HOST': 'ep-holy-bread-a5pr2my9.us-east-2.aws.neon.tech',  # The host for your PostgreSQL server
