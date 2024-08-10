@@ -52,12 +52,13 @@
         input[type="tel"],
         textarea,
         select {
-            width: 100%;
+            width: 100%; /* Adjust width to fit within the container padding */
             padding: 10px;
             margin-bottom: 20px;
             border: 2px solid #000000;
             border-radius: 4px;
             font-size: 16px;
+            box-sizing: border-box; /* Include padding and border in width calculation */
         }
 
         button {
@@ -85,7 +86,7 @@
 <body>
     <div class="container">
         <header>
-            Contact <span>CATFIX</span>
+            Contact CAT<span>FIX</span>
         </header>
         <form action="https://formsubmit.co/tarushagarwal2003@gmail.com" method="POST" enctype="multipart/form-data" id="contactForm">
             <label for="name" class="required">Full Name</label>
