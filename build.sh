@@ -1,2 +1,2 @@
-apt-get install zbar-tools
+sudo apt-get install zbar-tools
 pip install -r requirements.txt
