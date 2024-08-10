@@ -1,190 +1,243 @@
-<!-- templates/inspections/step2.html -->
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f4f4f4;
-        color: #000000;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    form {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        margin: auto;
-        border-left: 5px solid #FFCC00;
-    }
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #000000;
+        }
 
-    h3 {
-        color: #FFCC00;
-        margin-top: 20px;
-    }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            border-left: 5px solid #FFCC00;
+        }
 
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        color: #ffffff;
-        background-color: #000000;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
+        h3 {
+            color: #FFCC00;
+            margin-top: 20px;
+        }
 
-    button#start-recording {
-        background-color: #FFCC00;
-        color: #000000;
-        margin-right: 10px;
-    }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
 
-    button#start-recording:hover, button#stop-recording:hover, button#next-button:hover {
-        background-color: #FFCC00;
-        color: #000000;
-    }
+        button#start-recording {
+            background-color: #FFCC00;
+            color: #000000;
+            margin-right: 10px;
+        }
 
-    button:disabled {
-        background-color: #cccccc;
-        color: #666666;
-        cursor: not-allowed;
-    }
+        button#start-recording:hover,
+        button#stop-recording:hover,
+        button#next-button:hover {
+            background-color: #FFCC00;
+            color: #000000;
+        }
 
-    #captured-text, #summarized-text {
-        background-color: #f9f9f9;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 5px solid #FFCC00;
-        color: #000000;
-        font-size: 16px;
-        min-height: 50px;
-    }
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
 
-    #captured-text {
-        margin-bottom: 20px;
-    }
+        #captured-text,
+        #summarized-text {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #FFCC00;
+            color: #000000;
+            font-size: 16px;
+            min-height: 50px;
+        }
 
-    .tire-info {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-left: 5px solid #FFCC00;
-        border-radius: 8px;
-        color: #000000;
-    }
-</style>
+        #captured-text {
+            margin-bottom: 20px;
+        }
 
-<form method="post">
-    {% csrf_token %}
-    <div>
-        <button type="button" id="start-recording">Start Recording</button>
-        <button type="button" id="stop-recording" disabled>Stop Recording</button>
-    </div>
-    <div>
-        <h3>Captured Text:</h3>
-        <p id="captured-text">Start speaking to capture text...</p>
-    </div>
-    <div class="tire-info">
-        <p>▪ Tire Pressure for Left Front: <span id="tire-pressure-left-front"></span></p>
-        <p>▪ Tire Pressure for Right Front: <span id="tire-pressure-right-front"></span></p>
-        <p>▪ Tire Condition for Left Front: <span id="tire-condition-left-front"></span></p>
-        <p>▪ Tire Condition for Right Front: <span id="tire-condition-right-front"></span></p>
-        <p>▪ Tire Pressure for Left Rear: <span id="tire-pressure-left-rear"></span></p>
-        <p>▪ Tire Pressure for Right Rear: <span id="tire-pressure-right-rear"></span></p>
-        <p>▪ Tire Condition for Left Rear: <span id="tire-condition-left-rear"></span></p>
-        <p>▪ Tire Condition for Right Rear: <span id="tire-condition-right-rear"></span></p>
-        <p>▪ Overall Tire Summary: <span id="tire-summary"></span></p>
-    </div>
-    <button type="submit" id="next-button" disabled>Next</button>
-</form>
+        .tire-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #FFCC00;
+            border-radius: 8px;
+            color: #000000;
+        }
 
-<script>
-    let finalTranscript = '';
-    let recognition = null;
+        /* Header Styles */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-    // Check if the browser supports Web Speech API
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.continuous = true;
-        recognition.interimResults = true;
+        header span {
+            color: #FFCC00;
+        }
 
-        recognition.onresult = function(event) {
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript + ' ';
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 15px;
+                border-left: none;
+            }
+
+            header {
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        CAT<span>FIX</span>
+    </header>
+
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <button type="button" id="start-recording">Start Recording</button>
+            <button type="button" id="stop-recording" disabled>Stop Recording</button>
+        </div>
+        <div>
+            <h3>Captured Text:</h3>
+            <p id="captured-text">Start speaking to capture text...</p>
+        </div>
+        <div class="tire-info">
+            <p>▪ Tire Pressure for Left Front: <span id="tire-pressure-left-front"></span></p>
+            <p>▪ Tire Pressure for Right Front: <span id="tire-pressure-right-front"></span></p>
+            <p>▪ Tire Condition for Left Front: <span id="tire-condition-left-front"></span></p>
+            <p>▪ Tire Condition for Right Front: <span id="tire-condition-right-front"></span></p>
+            <p>▪ Tire Pressure for Left Rear: <span id="tire-pressure-left-rear"></span></p>
+            <p>▪ Tire Pressure for Right Rear: <span id="tire-pressure-right-rear"></span></p>
+            <p>▪ Tire Condition for Left Rear: <span id="tire-condition-left-rear"></span></p>
+            <p>▪ Tire Condition for Right Rear: <span id="tire-condition-right-rear"></span></p>
+            <p>▪ Overall Tire Summary: <span id="tire-summary"></span></p>
+        </div>
+        <button type="submit" id="next-button" disabled>Next</button>
+    </form>
+
+    <script>
+        let finalTranscript = '';
+        let recognition = null;
+
+        // Check if the browser supports Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onresult = function (event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
                 }
-            }
-            document.getElementById('captured-text').innerText = finalTranscript + interimTranscript;
+                document.getElementById('captured-text').innerText = finalTranscript + interimTranscript;
 
-            // Stop recording if word count exceeds 10,000
-            if (finalTranscript.split(' ').length >= 10000) {
-                recognition.stop();
-                document.getElementById('start-recording').disabled = false;
-                document.getElementById('stop-recording').disabled = true;
+                // Stop recording if word count exceeds 10,000
+                if (finalTranscript.split(' ').length >= 10000) {
+                    recognition.stop();
+                    document.getElementById('start-recording').disabled = false;
+                    document.getElementById('stop-recording').disabled = true;
+                    sendToGemini(finalTranscript);
+                }
+            };
+
+            recognition.onerror = function (event) {
+                console.error('Speech Recognition Error:', event.error);
+            };
+
+            recognition.onend = function () {
                 sendToGemini(finalTranscript);
-            }
+            };
+        } else {
+            alert('Your browser does not support Speech Recognition.');
+        }
+
+        document.getElementById('start-recording').onclick = function () {
+            finalTranscript = '';
+            recognition.start();
+            document.getElementById('start-recording').disabled = true;
+            document.getElementById('stop-recording').disabled = false;
         };
 
-        recognition.onerror = function(event) {
-            console.error('Speech Recognition Error:', event.error);
+        document.getElementById('stop-recording').onclick = function () {
+            recognition.stop();
+            document.getElementById('start-recording').disabled = false;
+            document.getElementById('stop-recording').disabled = true;
         };
 
-        recognition.onend = function() {
-            sendToGemini(finalTranscript);
-        };
-    } else {
-        alert('Your browser does not support Speech Recognition.');
-    }
+        function sendToGemini(text) {
+            fetch("{% url 'gemini_summarize_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ text: text }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    populateTireInfo(data.summary);
+                    document.getElementById('next-button').disabled = false;
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-    document.getElementById('start-recording').onclick = function() {
-        finalTranscript = '';
-        recognition.start();
-        document.getElementById('start-recording').disabled = true;
-        document.getElementById('stop-recording').disabled = false;
-    };
+        function populateTireInfo(summary) {
+            document.getElementById('tire-pressure-left-front').innerText = extractInfo(summary, 'Tire Pressure for Left Front');
+            document.getElementById('tire-pressure-right-front').innerText = extractInfo(summary, 'Tire Pressure for Right Front');
+            document.getElementById('tire-condition-left-front').innerText = extractInfo(summary, 'Tire Condition for Left Front');
+            document.getElementById('tire-condition-right-front').innerText = extractInfo(summary, 'Tire Condition for Right Front');
+            document.getElementById('tire-pressure-left-rear').innerText = extractInfo(summary, 'Tire Pressure for Left Rear');
+            document.getElementById('tire-pressure-right-rear').innerText = extractInfo(summary, 'Tire Pressure for Right Rear');
+            document.getElementById('tire-condition-left-rear').innerText = extractInfo(summary, 'Tire Condition for Left Rear');
+            document.getElementById('tire-condition-right-rear').innerText = extractInfo(summary, 'Tire Condition for Right Rear');
+            document.getElementById('tire-summary').innerText = summary.slice(0, 1000);  // Assuming the overall summary is the first 1000 characters
+        }
 
-    document.getElementById('stop-recording').onclick = function() {
-        recognition.stop();
-        document.getElementById('start-recording').disabled = false;
-        document.getElementById('stop-recording').disabled = true;
-    };
+        function extractInfo(text, label) {
+            const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
+            const match = text.match(regex);
+            return match ? match[1].trim() : '';
+        }
+    </script>
+</body>
 
-    function sendToGemini(text) {
-        fetch("{% url 'gemini_summarize_api' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({text: text}),
-        })
-        .then(response => response.json())
-        .then(data => {
-            populateTireInfo(data.summary);
-            document.getElementById('next-button').disabled = false;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function populateTireInfo(summary) {
-        document.getElementById('tire-pressure-left-front').innerText = extractInfo(summary, 'Tire Pressure for Left Front');
-        document.getElementById('tire-pressure-right-front').innerText = extractInfo(summary, 'Tire Pressure for Right Front');
-        document.getElementById('tire-condition-left-front').innerText = extractInfo(summary, 'Tire Condition for Left Front');
-        document.getElementById('tire-condition-right-front').innerText = extractInfo(summary, 'Tire Condition for Right Front');
-        document.getElementById('tire-pressure-left-rear').innerText = extractInfo(summary, 'Tire Pressure for Left Rear');
-        document.getElementById('tire-pressure-right-rear').innerText = extractInfo(summary, 'Tire Pressure for Right Rear');
-        document.getElementById('tire-condition-left-rear').innerText = extractInfo(summary, 'Tire Condition for Left Rear');
-        document.getElementById('tire-condition-right-rear').innerText = extractInfo(summary, 'Tire Condition for Right Rear');
-        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);  // Assuming the overall summary is the first 1000 characters
-    }
-
-    function extractInfo(text, label) {
-        const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
-        const match = text.match(regex);
-        return match ? match[1].trim() : '';
-    }
-</script>
+</html>

@@ -1,254 +1,322 @@
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f4f4f4;
-        color: #000000;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    form {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        margin: auto;
-        border-left: 5px solid #FFCC00;
-    }
-
-    label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #000000;
-    }
-
-    input[type="file"] {
-        margin-bottom: 20px;
-        font-size: 16px;
-        color: #000000;
-        border: 2px solid #000000;
-        padding: 5px;
-        border-radius: 4px;
-    }
-
-    img {
-        display: block;
-        margin-bottom: 20px;
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        border: 2px solid #FFCC00;
-    }
-
-    button {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 16px;
-        color: #ffffff;
-        background-color: #000000;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    button[type="button"] {
-        background-color: #FFCC00;
-        color: #000000;
-    }
-
-    button:hover {
-        background-color: #FFCC00;
-        color: #000000;
-    }
-
-    button[type="button"]:hover {
-        background-color: #000000;
-        color: #ffffff;
-    }
-
-    #extracted-text,
-    #date-time,
-    #location {
-        margin-top: 20px;
-        font-size: 16px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-left: 5px solid #FFCC00;
-        border-radius: 8px;
-        color: #000000;
-    }
-
-    #signature-pad {
-        margin-top: 20px;
-        border: 2px solid #FFCC00;
-        border-radius: 8px;
-    }
-</style>
-
-<form method="post" enctype="multipart/form-data" action="{% url 'step2' %}">
-    {% csrf_token %}
-
-    <!-- Image Upload Field -->
-    <label for="image">Upload Image:</label>
-    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-
-    <!-- Image Preview -->
-    <div>
-        <img id="image-preview" src="" alt="Image Preview">
-    </div>
-
-    <!-- Process Button -->
-    <button type="button" onclick="processImage()">Process</button>
-
-    <!-- Display Detected Barcode String -->
-    <div id="extracted-text"></div>
-
-    <!-- Display Date and Time -->
-    <div id="date-time"></div>
-
-    <!-- Display Location -->
-    <div id="location">
-        <p>Latitude: <span id="latitude"></span></p>
-        <p>Longitude: <span id="longitude"></span></p>
-    </div>
-
-    <!-- Signature Pad -->
-    <div>
-        <label for="signature">Draw your signature:</label>
-        <canvas id="signature-pad" width="400" height="200"></canvas>
-        <input type="hidden" name="signature" id="signature-input">
-        <button type="button" onclick="saveSignature()">Save Signature</button>
-        <button type="submit">Next</button>
-    </div>
-</form>
-
-<script>
-    // Initialize variables for drawing on the canvas
-    let isDrawing = false;
-    let x = 0;
-    let y = 0;
-    const canvas = document.getElementById('signature-pad');
-    const context = canvas.getContext('2d');
-
-    // Function to start drawing
-    canvas.addEventListener('mousedown', e => {
-        isDrawing = true;
-        x = e.offsetX;
-        y = e.offsetY;
-    });
-
-    // Function to stop drawing
-    canvas.addEventListener('mouseup', () => {
-        isDrawing = false;
-        x = 0;
-        y = 0;
-    });
-
-    // Function to draw on the canvas
-    canvas.addEventListener('mousemove', e => {
-        if (isDrawing) {
-            context.beginPath();
-            context.moveTo(x, y);
-            context.lineTo(e.offsetX, e.offsetY);
-            context.stroke();
-            x = e.offsetX;
-            y = e.offsetY;
-        }
-    });
-
-    // Handle touch events for mobile devices
-    canvas.addEventListener('touchstart', e => {
-        const touch = e.touches[0];
-        x = touch.clientX - canvas.offsetLeft;
-        y = touch.clientY - canvas.offsetTop;
-        isDrawing = true;
-    });
-
-    canvas.addEventListener('touchmove', e => {
-        if (isDrawing) {
-            const touch = e.touches[0];
-            context.beginPath();
-            context.moveTo(x, y);
-            context.lineTo(touch.clientX - canvas.offsetLeft, touch.clientY - canvas.offsetTop);
-            context.stroke();
-            x = touch.clientX - canvas.offsetLeft;
-            y = touch.clientY - canvas.offsetTop;
-        }
-    });
-
-    canvas.addEventListener('touchend', () => {
-        isDrawing = false;
-        x = 0;
-        y = 0;
-    });
-
-    // Function to Preview Image
-    function previewImage(event) {
-        const imagePreview = document.getElementById('image-preview');
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function () {
-            imagePreview.src = reader.result;
-            imagePreview.style.display = 'block';
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #000000;
         }
 
-        if (file) {
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // Function to Process Image
-    async function processImage() {
-        const imageInput = document.getElementById('image');
-        const file = imageInput.files[0];
-        if (!file) {
-            alert('Please upload an image first.');
-            return;
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            border-left: 5px solid #FFCC00;
         }
 
-        const formData = new FormData();
-        formData.append('image', file);
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
 
-        const response = await fetch("{% url 'process_image' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
+        input[type="file"] {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #000000;
+            border: 2px solid #000000;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        img {
+            display: block;
+            margin-bottom: 20px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #FFCC00;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button[type="button"] {
+            background-color: #FFCC00;
+            color: #000000;
+        }
+
+        button:hover {
+            background-color: #FFCC00;
+            color: #000000;
+        }
+
+        button[type="button"]:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        #extracted-text,
+        #date-time,
+        #location {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #FFCC00;
+            border-radius: 8px;
+            color: #000000;
+        }
+
+        #signature-pad {
+            margin-top: 20px;
+            border: 2px solid #FFCC00;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        header span {
+            color: #FFCC00;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 15px;
+                border-left: none;
+            }
+
+            header {
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            canvas {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        CAT<span>FIX</span>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" action="{% url 'step2' %}">
+        {% csrf_token %}
+
+        <!-- Image Upload Field -->
+        <label for="image">Upload Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+
+        <!-- Image Preview -->
+        <div>
+            <img id="image-preview" src="" alt="Image Preview">
+        </div>
+
+        <!-- Process Button -->
+        <button type="button" onclick="processImage()">Process</button>
+
+        <!-- Display Detected Barcode String -->
+        <div id="extracted-text"></div>
+
+        <!-- Display Date and Time -->
+        <div id="date-time"></div>
+
+        <!-- Display Location -->
+        <div id="location">
+            <p>Latitude: <span id="latitude"></span></p>
+            <p>Longitude: <span id="longitude"></span></p>
+        </div>
+
+        <!-- Signature Pad -->
+        <div>
+            <label for="signature">Draw your signature:</label>
+            <canvas id="signature-pad" width="400" height="200"></canvas>
+            <input type="hidden" name="signature" id="signature-input">
+            <button type="button" onclick="saveSignature()">Save Signature</button>
+            <button type="submit">Next</button>
+        </div>
+    </form>
+
+    <script>
+        // Initialize variables for drawing on the canvas
+        let isDrawing = false;
+        let x = 0;
+        let y = 0;
+        const canvas = document.getElementById('signature-pad');
+        const context = canvas.getContext('2d');
+
+        // Adjust touch coordinates
+        function getTouchPos(canvasDom, touchEvent) {
+            const rect = canvasDom.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        }
+
+        // Prevent scrolling while drawing
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            const touchPos = getTouchPos(canvas, e);
+            x = touchPos.x;
+            y = touchPos.y;
+            isDrawing = true;
+        });
+
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            if (isDrawing) {
+                const touchPos = getTouchPos(canvas, e);
+                context.beginPath();
+                context.moveTo(x, y);
+                context.lineTo(touchPos.x, touchPos.y);
+                context.stroke();
+                x = touchPos.x;
+                y = touchPos.y;
             }
         });
 
-        if (response.ok) {
-            const result = await response.json();
-            document.getElementById('extracted-text').innerText = result.text;
+        canvas.addEventListener('touchend', e => {
+            e.preventDefault();
+            isDrawing = false;
+            x = 0;
+            y = 0;
+        });
 
-            // Display current date and time
-            const now = new Date();
-            document.getElementById('date-time').innerText = `Date and Time: ${now.toLocaleString()}`;
+        // Function to start drawing
+        canvas.addEventListener('mousedown', e => {
+            isDrawing = true;
+            x = e.offsetX;
+            y = e.offsetY;
+        });
 
-            // Get and display current location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-                    document.getElementById('latitude').innerText = latitude.toFixed(6);
-                    document.getElementById('longitude').innerText = longitude.toFixed(6);
-                });
-            } else {
-                document.getElementById('location').innerText = 'Geolocation is not supported by this browser.';
+        // Function to stop drawing
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            x = 0;
+            y = 0;
+        });
+
+        // Function to draw on the canvas
+        canvas.addEventListener('mousemove', e => {
+            if (isDrawing) {
+                context.beginPath();
+                context.moveTo(x, y);
+                context.lineTo(e.offsetX, e.offsetY);
+                context.stroke();
+                x = e.offsetX;
+                y = e.offsetY;
             }
-        } else {
-            document.getElementById('extracted-text').innerText = 'An error occurred while processing the image.';
-        }
-    }
+        });
 
-    // Function to Save Signature
-    function saveSignature() {
-        var canvas = document.getElementById('signature-pad');
-        var signatureInput = document.getElementById('signature-input');
-        signatureInput.value = canvas.toDataURL();
-    }
-</script>
+        // Function to Preview Image
+        function previewImage(event) {
+            const imagePreview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function () {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Function to Process Image
+        async function processImage() {
+            const imageInput = document.getElementById('image');
+            const file = imageInput.files[0];
+            if (!file) {
+                alert('Please upload an image first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch("{% url 'process_image' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById('extracted-text').innerText = result.text;
+
+                // Display current date and time
+                const now = new Date();
+                document.getElementById('date-time').innerText = `Date and Time: ${now.toLocaleString()}`;
+
+                // Get and display current location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        document.getElementById('latitude').innerText = latitude.toFixed(6);
+                        document.getElementById('longitude').innerText = longitude.toFixed(6);
+                    });
+                } else {
+                    document.getElementById('location').innerText = 'Geolocation is not supported by this browser.';
+                }
+            } else {
+                document.getElementById('extracted-text').innerText = 'An error occurred while processing the image.';
+            }
+        }
+
+        // Function to Save Signature
+        function saveSignature() {
+            var canvas = document.getElementById('signature-pad');
+            var signatureInput = document.getElementById('signature-input');
+            signatureInput.value = canvas.toDataURL();
+        }
+    </script>
+</body>
+
+</html>

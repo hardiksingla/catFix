@@ -1,4 +1,4 @@
-inspections\__pycache__
-inspection_app\__pycache__
-inspections\migrations
+inspections/__pycache__/
+inspection_app/__pycache__/
+inspections/migrations/
 api.txt

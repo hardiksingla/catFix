@@ -86,7 +86,7 @@ def process_image(request):
             return JsonResponse({'error': 'No image provided'}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-genai.configure(api_key="")  # Replace with your actual API key
+genai.configure(api_key="AIzaSyByoWksAxsGmVPJb2vNBUIcAvTuMUvu_G0")  # Replace with your actual API key
 
 @csrf_exempt
 def gemini_summarize_api(request):
