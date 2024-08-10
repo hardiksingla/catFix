@@ -39,4 +39,5 @@ urlpatterns = [
     path('save-api-key/', views.settings_view, name='save_api_key'),
     path('process-image/', views.process_image, name='process_image'),
     path('gemini_summarize_api/', views.gemini_summarize_api, name='gemini_summarize_api'),
+    path('gemini_process_issue/', views.gemini_process_issue, name='gemini_process_issue'),
 ]

@@ -27,6 +27,42 @@
             margin-top: 20px;
         }
 
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #000000;
+            font-size: 16px;
+            min-height: 100px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        #image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            border: 2px solid #000000;
+        }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -47,7 +83,7 @@
 
         button#start-recording:hover,
         button#stop-recording:hover,
-        button#next-button:hover {
+        button#submit-report:hover {
             background-color: #FFCC00;
             color: #000000;
         }
@@ -59,7 +95,7 @@
         }
 
         #captured-text,
-        #summarized-text {
+        #typed-text {
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -71,6 +107,17 @@
 
         #captured-text {
             margin-bottom: 20px;
+        }
+
+        .ai-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #FFCC00;
+            border-radius: 8px;
+            color: #000000;
+            font-size: 16px;
+            min-height: 50px;
         }
 
         .tire-info {
@@ -125,7 +172,7 @@
         CAT<span>FIX</span>
     </header>
 
-    <form method="post">
+    <form id="issueForm" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div>
             <button type="button" id="start-recording">Start Recording</button>
@@ -135,10 +182,20 @@
             <h3>Captured Text:</h3>
             <p id="captured-text">Start speaking to capture text...</p>
         </div>
-        <div class="tire-info">
-            <p><span id="tire-summary"></span></p>
+        <div>
+            <label for="typed-text">Type the Issue:</label>
+            <textarea id="typed-text" name="typed_text" placeholder="Type the issue here..."></textarea>
         </div>
-        <button type="submit" id="next-button" disabled>Next</button>
+        <div>
+            <label for="image-upload">Upload Images:</label>
+            <input type="file" id="image-upload" name="images" accept="image/*" multiple>
+            <div id="image-preview"></div>
+        </div>
+        <div class="ai-summary" id="ai-summary" style="display: none;">
+            <h3>AI Summary:</h3>
+            <p id="ai-summary-text"></p>
+        </div>
+        <button type="button" id="submit-report">Submit Report</button>
     </form>
 
     <script>
@@ -167,7 +224,6 @@
                     recognition.stop();
                     document.getElementById('start-recording').disabled = false;
                     document.getElementById('stop-recording').disabled = true;
-                    sendToGemini(finalTranscript);
                 }
             };
 
@@ -176,7 +232,8 @@
             };
 
             recognition.onend = function () {
-                sendToGemini(finalTranscript);
+                document.getElementById('start-recording').disabled = false;
+                document.getElementById('stop-recording').disabled = true;
             };
         } else {
             alert('Your browser does not support Speech Recognition.');
@@ -195,39 +252,78 @@
             document.getElementById('stop-recording').disabled = true;
         };
 
-        function sendToGemini(text) {
+        document.getElementById('image-upload').onchange = function () {
+            const previewContainer = document.getElementById('image-preview');
+            previewContainer.innerHTML = '';
+            const files = Array.from(this.files);
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        document.getElementById('submit-report').onclick = function () {
+            const capturedText = document.getElementById('captured-text').innerText.trim();
+            const typedText = document.getElementById('typed-text').value.trim();
+            const images = document.getElementById('image-upload').files;
+
+            // Combine both captured and typed text
+            const finalText = `${capturedText}\n${typedText}`;
+
+            if (finalText.trim() === '' && images.length === 0) {
+                alert('Please provide some issue details or upload images before submitting.');
+                return;
+            }
+
+            // Create FormData object to handle file uploads and text data
+            const formData = new FormData();
+            formData.append('text', finalText);
+
+            for (let i = 0; i < images.length; i++) {
+                formData.append('images', images[i]);
+            }
+
+            // Retrieve API key from local storage
             const apiKey = localStorage.getItem('geminiApiKey');
 
             if (!apiKey) {
                 console.error('API key not found.');
+                alert('API key not found. Please save the API key in settings.');
                 return;
             }
 
-            fetch("{% url 'gemini_summarize_api' %}", {
+            // Add the API key to the FormData object
+            formData.append('api_key', apiKey);
+
+            // Make the fetch request
+            fetch("{% url 'gemini_process_issue' %}", {
                 method: 'POST',
+                body: formData,  // Sending the FormData which includes the API key, text, and images
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}',
-                },
-                body: JSON.stringify({ text: text, api_key: apiKey }),  // Send text and API key
+                    'X-CSRFToken': '{{ csrf_token }}'  // CSRF token for security
+                }
             })
                 .then(response => response.json())
                 .then(data => {
-                    populateTireInfo(data.summary);
-                    document.getElementById('next-button').disabled = false;
+                    if (data.summary) {
+                        // Display the AI Summary
+                        document.getElementById('ai-summary-text').innerText = data.summary;
+                        document.getElementById('ai-summary').style.display = 'block';
+                        alert('Report submitted successfully!');
+                    } else {
+                        alert('Failed to submit the report.');
+                    }
                 })
                 .catch(error => console.error('Error:', error));
-        }
+        };
 
-        function populateTireInfo(summary) {
-            document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
-        }
 
-        function extractInfo(text, label) {
-            const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
-            const match = text.match(regex);
-            return match ? match[1].trim() : '';
-        }
     </script>
 </body>
 

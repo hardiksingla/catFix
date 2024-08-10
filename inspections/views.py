@@ -10,8 +10,9 @@ from PIL import Image
 from pyzbar.pyzbar import decode
 import json
 import google.generativeai as genai
-
+import tempfile
 from django.shortcuts import render
+
 
 def step1(request):
     form = ImageForm()
@@ -140,6 +141,83 @@ def gemini_summarize_api(request):
 
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
+@csrf_exempt  # Exempt this view from CSRF validation
+def gemini_process_issue(request):
+    if request.method == 'POST':
+        try:
+            text = request.POST.get('text')
+            api_key = request.POST.get('api_key')  # Retrieve the API key sent from the front-end
+            images = request.FILES.getlist('images')
+
+            if not api_key:
+                return JsonResponse({'error': 'API key is missing'}, status=400)
+            if not text:
+                return JsonResponse({'error': 'No text provided'}, status=400)
+
+            # Set the API key for Google Gemini (or your specific API)
+            genai.configure(api_key=api_key)
+
+            image_uris = []
+            for image in images:
+                # Open the image using PIL and save it to a temporary file
+                img = Image.open(image)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=f".{img.format.lower()}") as temp_img_file:
+                    img.save(temp_img_file.name)
+                    temp_img_file.close()  # Ensure the file is written and closed
+
+                    # Upload the image to Gemini using the temporary file path
+                    uploaded_file = genai.upload_file(
+                        path=temp_img_file.name,  # Use the temporary file path
+                        display_name=image.name
+                    )
+                    image_uris.append(uploaded_file.uri)
+
+                # Clean up the temporary file
+                os.remove(temp_img_file.name)
+
+            # Use the API to generate a summary based on text and images
+            model = genai.GenerativeModel('gemini-1.5-flash')
+
+            # Create the prompt including the text and image URIs
+            prompt = f"""
+                The user has reported an issue with their CAT vehicle. Below is the provided information:
+
+                - Description of the issue: {text}
+                - Number of attached images: {len(image_uris)}
+
+                Please summarize the problem described in the text and provide a brief overview of the content of the images.
+            """
+
+            # Add each image URI to the prompt
+            for uri in image_uris:
+                prompt += f"\n[Image URI: {uri}]"
+
+            # Generate content using the prompt
+            response = model.generate_content(prompt)
+
+            # Handle the response from the API
+            if response and "NOT RELEVANT TEXT" in response.text:
+                return JsonResponse({'error': 'NOT RELEVANT TEXT'}, status=400)
+            elif response:
+                summary = response.text
+                return JsonResponse({'summary': summary})
+            else:
+                return JsonResponse({'error': 'Failed to generate summary'}, status=500)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON provided'}, status=400)
+        except Exception as e:
+            # Catch any other exceptions that may occur
+            return JsonResponse({'error': str(e)}, status=500)
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+
 
 
 
