@@ -3,4 +3,5 @@ pyzbar
 generativeai
 djongo
 requests
-pil
+pillow
+
