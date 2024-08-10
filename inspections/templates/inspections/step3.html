@@ -14,9 +14,9 @@
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
             border-left: 5px solid #FFCC00;
@@ -25,31 +25,34 @@
         h3 {
             color: #FFCC00;
             margin-top: 20px;
+            font-weight: 600;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button#start-recording {
             background-color: #FFCC00;
-            color: #000000;
+            color: #343a40;
             margin-right: 10px;
         }
 
         button#start-recording:hover,
         button#stop-recording:hover,
         button#submit-button:hover {
-            background-color: #FFCC00;
-            color: #000000;
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button:disabled {
@@ -71,7 +74,7 @@
 
         .battery-info {
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
             border-left: 5px solid #FFCC00;
             border-radius: 8px;
@@ -81,7 +84,7 @@
         .battery-info div {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .battery-info label {
@@ -91,15 +94,19 @@
 
         .battery-info input {
             flex: 2;
-            padding: 5px;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 10px;
             max-width: 40%;
         }
 
         #battery-summary {
-            height: 90px;
-            max-width: 50%;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            min-height: 90px;
         }
 
         .image-upload {
@@ -108,50 +115,70 @@
 
         .image-upload label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #000000;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
         }
 
         .image-upload input[type="file"] {
             width: 100%;
             margin-bottom: 20px;
             padding: 5px;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
         }
 
         /* Header Styles */
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
             color: #FFCC00;
         }
 
-        /* Responsive Design */
+        /* Mobile Responsive Design */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
                 padding: 10px;
                 font-size: 14px;
+            }
+
+            .battery-info div {
+                flex-direction: column;
+            }
+
+            .battery-info label {
+                margin-bottom: 5px;
+            }
+
+            .battery-info input {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #battery-summary {
+                padding: 10px;
             }
         }
     </style>
@@ -201,8 +228,7 @@
             </div>
             <div>
                 <label>▪ Battery Overall Summary:</label>
-                <textarea id="battery-summary" name="battery-summary" rows="4"
-                    style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 10px;"></textarea>
+                <textarea id="battery-summary" name="battery-summary" rows="4"></textarea>
             </div>
         </div>
 

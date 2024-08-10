@@ -3,39 +3,43 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Signature</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
-            color: #000000;
+            background-color: #e9ecef;
+            color: #212529;
         }
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
-            border-left: 5px solid #FFCC00;
+            border-left: 5px solid #FFC107;
         }
 
         label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #000000;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
         }
 
         input[type="file"] {
             margin-bottom: 20px;
             font-size: 16px;
-            color: #000000;
-            border: 2px solid #000000;
-            padding: 5px;
+            color: #495057;
+            border: 2px solid #ced4da;
+            padding: 8px;
             border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
         }
 
         img {
@@ -44,70 +48,78 @@
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            border: 2px solid #FFCC00;
+            border: 2px solid #FFC107;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button[type="button"] {
-            background-color: #FFCC00;
-            color: #000000;
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button:hover {
-            background-color: #FFCC00;
-            color: #000000;
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button[type="button"]:hover {
-            background-color: #000000;
+            background-color: #343a40;
             color: #ffffff;
         }
 
-    #extracted-text,
-    #date-time,
-    #location,
-    #barcode-info {
-        margin-top: 20px;
-        font-size: 16px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-left: 5px solid #FFCC00;
-        border-radius: 8px;
-        color: #000000;
-    }
+        #extracted-text,
+        #date-time,
+        #location,
+        #barcode-info {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #FFC107;
+            border-radius: 8px;
+            color: #212529;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
         #signature-pad {
             margin-top: 20px;
-            border: 2px solid #FFCC00;
+            border: 2px solid #FFC107;
             border-radius: 8px;
             width: 100%;
+            height: 200px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Header Styles */
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
-            color: #FFCC00;
+            color: #FFC107;
         }
 
         /* Responsive Design */
@@ -117,12 +129,12 @@
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
@@ -157,12 +169,12 @@
         <!-- Process Button -->
         <button type="button" onclick="processImage()">Process</button>
 
-    <!-- Display Detected Barcode String -->
-    <div id="extracted-text" style = "display: none;"></div>
-    <div id="barcode-info" style="margin-top: 20px;">
-        <p>Model Number: <span id="model-number"></span></p>
-        <p>Serial Number: <span id="serial-number"></span></p>
-    </div>
+        <!-- Display Detected Barcode String -->
+        <div id="extracted-text" style="display: none;"></div>
+        <div id="barcode-info" style="margin-top: 20px;">
+            <p>Model Number: <span id="model-number"></span></p>
+            <p>Serial Number: <span id="serial-number"></span></p>
+        </div>
 
         <!-- Display Date and Time -->
         <div id="date-time">
@@ -178,7 +190,7 @@
         <!-- Signature Pad -->
         <div>
             <label for="signature">Draw your signature:</label>
-            <canvas id="signature-pad" width="400" height="200"></canvas>
+            <canvas id="signature-pad"></canvas>
             <input type="hidden" name="signature" id="signature-input">
             <button type="button" onclick="saveSignature()">Save Signature</button>
             <button type="submit">Next</button>
@@ -193,68 +205,74 @@
         const canvas = document.getElementById('signature-pad');
         const context = canvas.getContext('2d');
 
-        // Adjust touch coordinates
-        function getTouchPos(canvasDom, touchEvent) {
-            const rect = canvasDom.getBoundingClientRect();
+        // Adjust canvas position to get correct drawing coordinates
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
             return {
-                x: touchEvent.touches[0].clientX - rect.left,
-                y: touchEvent.touches[0].clientY - rect.top
+                x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+                y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
             };
         }
 
-        // Prevent scrolling while drawing
-        canvas.addEventListener('touchstart', e => {
-            e.preventDefault();
-            const touchPos = getTouchPos(canvas, e);
-            x = touchPos.x;
-            y = touchPos.y;
+        // Function to start drawing on mouse down
+        canvas.addEventListener('mousedown', e => {
             isDrawing = true;
+            const pos = getMousePos(canvas, e);
+            x = pos.x;
+            y = pos.y;
         });
 
-        canvas.addEventListener('touchmove', e => {
-            e.preventDefault();
+        // Function to draw as the mouse moves
+        canvas.addEventListener('mousemove', e => {
             if (isDrawing) {
-                const touchPos = getTouchPos(canvas, e);
+                const pos = getMousePos(canvas, e);
                 context.beginPath();
                 context.moveTo(x, y);
-                context.lineTo(touchPos.x, touchPos.y);
+                context.lineTo(pos.x, pos.y);
                 context.stroke();
-                x = touchPos.x;
-                y = touchPos.y;
+                x = pos.x;
+                y = pos.y;
             }
         });
 
-        canvas.addEventListener('touchend', e => {
-            e.preventDefault();
-            isDrawing = false;
-            x = 0;
-            y = 0;
-        });
-
-        // Function to start drawing
-        canvas.addEventListener('mousedown', e => {
-            isDrawing = true;
-            x = e.offsetX;
-            y = e.offsetY;
-        });
-
-        // Function to stop drawing
+        // Stop drawing on mouse up
         canvas.addEventListener('mouseup', () => {
             isDrawing = false;
             x = 0;
             y = 0;
         });
 
-        // Function to draw on the canvas
-        canvas.addEventListener('mousemove', e => {
+        // Prevent default scrolling on touch
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const pos = getMousePos(canvas, touch);
+            x = pos.x;
+            y = pos.y;
+            isDrawing = true;
+        });
+
+        // Draw on touch move
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
             if (isDrawing) {
+                const touch = e.touches[0];
+                const pos = getMousePos(canvas, touch);
                 context.beginPath();
                 context.moveTo(x, y);
-                context.lineTo(e.offsetX, e.offsetY);
+                context.lineTo(pos.x, pos.y);
                 context.stroke();
-                x = e.offsetX;
-                y = e.offsetY;
+                x = pos.x;
+                y = pos.y;
             }
+        });
+
+        // Stop drawing on touch end
+        canvas.addEventListener('touchend', e => {
+            e.preventDefault();
+            isDrawing = false;
+            x = 0;
+            y = 0;
         });
 
         // Function to Preview Image
@@ -293,17 +311,17 @@
                 }
             });
 
-        if (response.ok) {
-            const result = await response.json();
-            document.getElementById('extracted-text').innerText = result.text;
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById('extracted-text').innerText = result.text;
 
-            // Extract and display Model Number and Serial Number
-            const extractedText = result.text.trim();
-            const modelNumber = extractedText.slice(3, 10);  // Assuming the model number is fixed length
-            const serialNumber = extractedText.slice(10);     // Remaining part is the serial number
+                // Extract and display Model Number and Serial Number
+                const extractedText = result.text.trim();
+                const modelNumber = extractedText.slice(3, 10);  // Assuming the model number is fixed length
+                const serialNumber = extractedText.slice(10);     // Remaining part is the serial number
 
-            document.getElementById('model-number').innerText = modelNumber || 'N/A';
-            document.getElementById('serial-number').innerText = serialNumber || 'N/A';
+                document.getElementById('model-number').innerText = modelNumber || 'N/A';
+                document.getElementById('serial-number').innerText = serialNumber || 'N/A';
 
                 // Display current date and time
                 const now = new Date();

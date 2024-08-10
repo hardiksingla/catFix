@@ -85,11 +85,12 @@
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
@@ -108,12 +109,16 @@
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
                 padding: 10px;
                 font-size: 14px;
+            }
+
+            .star {
+                font-size: 30px; /* Slightly smaller stars for mobile view */
             }
         }
     </style>
@@ -164,7 +169,7 @@
 
             star.addEventListener('click', () => {
                 ratingInput.value = index + 1;
-                for (let i = 0; i <= index; i++) {
+                for (let i = 0 <= index; i++) {
                     stars[i].classList.add('selected');
                 }
             });

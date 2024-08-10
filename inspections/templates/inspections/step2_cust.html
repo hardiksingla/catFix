@@ -14,9 +14,9 @@
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
             border-left: 5px solid #FFCC00;
@@ -29,24 +29,26 @@
 
         label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #000000;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
         }
 
         textarea {
             width: 100%;
             padding: 15px;
             border-radius: 8px;
-            border: 2px solid #000000;
+            border: 2px solid #ced4da;
             font-size: 16px;
             min-height: 100px;
             box-sizing: border-box;
             margin-bottom: 20px;
+            background-color: #f8f9fa;
         }
 
         input[type="file"] {
             margin-bottom: 20px;
+            font-size: 16px;
         }
 
         #image-preview {
@@ -60,32 +62,35 @@
             max-width: 100px;
             max-height: 100px;
             border-radius: 8px;
-            border: 2px solid #000000;
+            border: 2px solid #FFCC00;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button#start-recording {
             background-color: #FFCC00;
-            color: #000000;
+            color: #343a40;
             margin-right: 10px;
         }
 
         button#start-recording:hover,
         button#stop-recording:hover,
         button#submit-report:hover {
-            background-color: #FFCC00;
-            color: #000000;
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button:disabled {
@@ -133,11 +138,12 @@
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
@@ -151,12 +157,12 @@
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
