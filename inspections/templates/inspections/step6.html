@@ -47,7 +47,7 @@
 
         button#start-recording:hover,
         button#stop-recording:hover,
-        button#next-button:hover {
+        button#submit-button:hover {
             background-color: #FFCC00;
             color: #000000;
         }
@@ -59,7 +59,7 @@
         }
 
         #captured-text,
-        #summarized-text {
+        #summary-text {
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -69,17 +69,54 @@
             min-height: 50px;
         }
 
-        #captured-text {
-            margin-bottom: 20px;
-        }
-
-        .tire-info {
+        .engine-info {
             margin-top: 20px;
             padding: 10px;
             background-color: #f9f9f9;
             border-left: 5px solid #FFCC00;
             border-radius: 8px;
             color: #000000;
+        }
+
+        .engine-info div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .engine-info label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .engine-info input {
+            flex: 2;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            max-width: 40%;
+        }
+
+        #engine-summary {
+            height: 90px;
+            max-width: 50%;
+        }
+
+        .image-upload {
+            margin-top: 20px;
+        }
+
+        .image-upload label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .image-upload input[type="file"] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 5px;
         }
 
         /* Header Styles */
@@ -125,21 +162,57 @@
         CAT<span>FIX</span>
     </header>
 
-<form method="post">
-    {% csrf_token %}
-    <div>
-        <button type="button" id="start-recording">Start Recording</button>
-        <button type="button" id="stop-recording" disabled>Stop Recording</button>
-    </div>
-    <div>
-        <h3>Captured Text:</h3>
-        <p id="captured-text">Start speaking to capture text...</p>
-    </div>
-    <div class="tire-info">
-        <p><span id="tire-summary"></span></p>
-    </div>
-    <button type="submit" id="next-button" disabled>Next</button>
-</form>
+    <form id="engine-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <button type="button" id="start-recording">Start Recording</button>
+            <button type="button" id="stop-recording" disabled>Stop Recording</button>
+        </div>
+        <div>
+            <h3>Captured Text:</h3>
+            <p id="captured-text">Start speaking to capture text...</p>
+        </div>
+
+        <div class="engine-info">
+            <h3>Engine Information:</h3>
+            <div>
+                <label>▪ Rust, Dents or Damage in Engine:</label>
+                <input type="text" id="engine-damage" name="engine-damage">
+            </div>
+            <div>
+                <label>▪ Engine Oil Condition:</label>
+                <input type="text" id="engine-oil-condition" name="engine-oil-condition">
+            </div>
+            <div>
+                <label>▪ Engine Oil Color:</label>
+                <input type="text" id="engine-oil-color" name="engine-oil-color">
+            </div>
+            <div>
+                <label>▪ Brake Fluid Condition:</label>
+                <input type="text" id="brake-fluid-condition" name="brake-fluid-condition">
+            </div>
+            <div>
+                <label>▪ Brake Fluid Color:</label>
+                <input type="text" id="brake-fluid-color" name="brake-fluid-color">
+            </div>
+            <div>
+                <label>▪ Any Oil Leak in Engine:</label>
+                <input type="text" id="engine-oil-leak" name="engine-oil-leak">
+            </div>
+            <div>
+                <label>▪ Engine Overall Summary:</label>
+                <textarea id="engine-summary" name="engine-summary" rows="4" style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 10px;"></textarea>
+            </div>
+        </div>
+
+        <div class="image-upload">
+            <h3>Upload Images:</h3>
+            <label for="image-engine">Engine Images:</label>
+            <input type="file" id="image-engine" name="image-engine" accept="image/*" multiple>
+        </div>
+
+        <button type="button" id="submit-button" disabled>Submit</button>
+    </form>
 
     <script>
         let finalTranscript = '';
@@ -167,7 +240,7 @@
                     recognition.stop();
                     document.getElementById('start-recording').disabled = false;
                     document.getElementById('stop-recording').disabled = true;
-                    sendToGemini(finalTranscript);
+                    gemini_summarize_engine(finalTranscript);
                 }
             };
 
@@ -176,7 +249,7 @@
             };
 
             recognition.onend = function () {
-                sendToGemini(finalTranscript);
+                gemini_summarize_engine(finalTranscript);
             };
         } else {
             alert('Your browser does not support Speech Recognition.');
@@ -195,32 +268,106 @@
             document.getElementById('stop-recording').disabled = true;
         };
 
-        function sendToGemini(text) {
-            fetch("{% url 'gemini_summarize_api' %}", {
+        function gemini_summarize_engine(text) {
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            if (!apiKey) {
+                console.error('API key not found.');
+                alert('Please set up your Gemini API key in the settings page.');
+                return;
+            }
+
+            fetch("{% url 'gemini_summarize_engine' %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}',
                 },
-                body: JSON.stringify({ text: text }),
+                body: JSON.stringify({ text: text, api_key: apiKey }),  // Send text and API key
             })
                 .then(response => response.json())
                 .then(data => {
-                    populateTireInfo(data.summary);
-                    document.getElementById('next-button').disabled = false;
+                    populateEngineInfo(data.summary);
+                    document.getElementById('submit-button').disabled = false;
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-    function populateTireInfo(summary) {
-        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
-    }
-
-        function extractInfo(text, label) {
-            const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
-            const match = text.match(regex);
-            return match ? match[1].trim() : '';
+        function populateEngineInfo(summary) {
+            const engineInfo = extractEngineInfo(summary);
+            document.getElementById('engine-damage').value = engineInfo.engineDamage;
+            document.getElementById('engine-oil-condition').value = engineInfo.engineOilCondition;
+            document.getElementById('engine-oil-color').value = engineInfo.engineOilColor;
+            document.getElementById('brake-fluid-condition').value = engineInfo.brakeFluidCondition;
+            document.getElementById('brake-fluid-color').value = engineInfo.brakeFluidColor;
+            document.getElementById('engine-oil-leak').value = engineInfo.engineOilLeak;
+            document.getElementById('engine-summary').value = engineInfo.overallSummary;
         }
+
+        function extractEngineInfo(summary) {
+            const regexes = {
+                engineDamage: /Rust, Dents or Damage in Engine:\s*([^\n]*)/,
+                engineOilCondition: /Engine Oil Condition:\s*([^\n]*)/,
+                engineOilColor: /Engine Oil Color:\s*([^\n]*)/,
+                brakeFluidCondition: /Brake Fluid Condition:\s*([^\n]*)/,
+                brakeFluidColor: /Brake Fluid Color:\s*([^\n]*)/,
+                engineOilLeak: /Any Oil Leak in Engine:\s*([^\n]*)/,
+                overallSummary: /Engine Overall Summary:\s*([^\n]*)/,
+            };
+
+            const engineInfo = {};
+            for (const key in regexes) {
+                const match = summary.match(regexes[key]);
+                engineInfo[key] = match ? match[1].trim() : '';
+            }
+            return engineInfo;
+        }
+
+        document.getElementById('submit-button').onclick = function () {
+            const formData = new FormData(document.getElementById('engine-form'));
+
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            if (!apiKey) {
+                console.error('API key not found.');
+                alert('Please set up your Gemini API key in the settings page.');
+                return;
+            }
+
+            formData.append('api_key', apiKey);
+
+            // Convert images to base64 and append to form data
+            const imageFields = ['image-engine'];
+            imageFields.forEach(field => {
+                const fileInput = document.getElementById(field);
+                if (fileInput.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        formData.append(field, event.target.result);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            });
+
+            // Submit the form data
+            fetch("{% url 'submit_engine_data' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Data submitted successfully!');
+                        window.location.href = "{% url 'menu' %}";
+                    } else {
+                        alert('Failed to submit data.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        };
     </script>
 </body>
 
