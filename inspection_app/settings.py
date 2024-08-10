@@ -85,14 +85,17 @@ WSGI_APPLICATION = 'inspection_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fixit',  # This is the database name you want to use
-        'CLIENT': {
-            'host': 'postgresql://neondb_owner:Zfm4HK2JhMbi@ep-holy-bread-a5pr2my9.us-east-2.aws.neon.tech/neondb?sslmode=require',
-            'authSource': 'admin',
-            'authMechanism': 'SCRAM-SHA-1',
-        }
+        'NAME': 'fixit',  # The name of your PostgreSQL database
+        'USER': 'neondb_owner',  # Your PostgreSQL username
+        'PASSWORD': 'Zfm4HK2JhMbi',  # Your PostgreSQL password
+        'HOST': 'ep-holy-bread-a5pr2my9.us-east-2.aws.neon.tech',  # The host for your PostgreSQL server
+        'PORT': '5432',  # The port for your PostgreSQL server (default is 5432)
+        'OPTIONS': {
+            'sslmode': 'require',  # Ensures SSL connection
+        },
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
