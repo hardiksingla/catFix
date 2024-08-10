@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-vebr@h@+#4v!j26&tpu)&7a)a%59vg*!))^06i)8(n$+su%ld*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -74,27 +74,28 @@ WSGI_APPLICATION = 'inspection_app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-'''
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',  # The name of your PostgreSQL database
+        'USER': 'neondb_owner',  # Your PostgreSQL username
+        'PASSWORD': 'Zfm4HK2JhMbi',  # Your PostgreSQL password
+        'HOST': 'ep-holy-bread-a5pr2my9.us-east-2.aws.neon.tech',  # The host for your PostgreSQL server
+        'PORT': '5432',  # The port for your PostgreSQL server (default is 5432)
+        'OPTIONS': {
+            'sslmode': 'require',  # Ensures SSL connection
+        },
     }
 }
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'fixit',  # This is the database name you want to use
-        'CLIENT': {
-            'host': 'mongodb+srv://07hardiksingla:HtN8hSboxTYmdetV@cluster0.wuvbh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-            'username': '07hardiksingla',
-            'password': 'HtN8hSboxTYmdetV',
-            'authSource': 'admin',
-            'authMechanism': 'SCRAM-SHA-1',
-        }
-    }
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
