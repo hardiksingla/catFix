@@ -11,3 +11,10 @@ class Inspection(models.Model):
 
     def __str__(self):
         return f'{self.customer_name} - {self.customer_id}'
+class User(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)  # You should hash passwords in a real application
+
+    def _str_(self):
+        return self.username

@@ -172,6 +172,7 @@ def signup_view(request):
             return render(request, 'inspections/signup.html', {'error': 'Passwords do not match'})
 
         if verify_signup(username, email, password):
+            save_signup_data(username,password,email)
             return redirect('step1')
         else:
             return render(request, 'inspections/signup.html', {'error': 'Invalid credentials'})
@@ -182,4 +183,15 @@ def verify_signup(username, email, password):
     return True  # For now, this just returns True for demonstration
 
 
+
+from .models import User
+from django.shortcuts import render, redirect
+
+def save_signup_data(username,password,email):
+        # Save data to MongoDB
+        inspection = User(username=username, password=password, email=email)
+        inspection.save()
+
+        
+    
 
