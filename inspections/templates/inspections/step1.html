@@ -165,7 +165,9 @@
     </div>
 
         <!-- Display Date and Time -->
-        <div id="date-time"></div>
+        <div id="date-time">
+            <p>Date and Time: <span id="date-time-placeholder"></span></p>
+        </div>
 
         <!-- Display Location -->
         <div id="location">
@@ -305,7 +307,7 @@
 
                 // Display current date and time
                 const now = new Date();
-                document.getElementById('date-time').innerText = `Date and Time: ${now.toLocaleString()}`;
+                document.getElementById('date-time-placeholder').innerText = `Date and Time: ${now.toLocaleString()}`;
 
                 // Get and display current location
                 if (navigator.geolocation) {

@@ -139,7 +139,7 @@
         {% csrf_token %}
 
         <!-- Image Upload Field -->
-        <label for="image">Upload Image:</label>
+        <label for="image">Upload Image of Machine ID Plate:</label>
         <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
 
         <!-- Image Preview -->
@@ -158,7 +158,9 @@
     </div>
 
         <!-- Display Date and Time -->
-        <div id="date-time"></div>
+        <div id="date-time">
+            <p>Date and Time: <span id="date-time-placeholder"></span></p>
+        </div>
 
         <!-- Display Location -->
         <div id="location">
@@ -225,7 +227,7 @@
 
                 // Display current date and time
                 const now = new Date();
-                document.getElementById('date-time').innerText = `Date and Time: ${now.toLocaleString()}`;
+                document.getElementById('date-time-placeholder').innerText = `${now.toLocaleString()}`;
 
                 // Get and display current location
                 if (navigator.geolocation) {
