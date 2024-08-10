@@ -9,3 +9,5 @@ pyzbar
 requests
 requests-oauthlib
 google-generativeai
+psycopg2-binary
+pytz
