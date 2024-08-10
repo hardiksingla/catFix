@@ -19,9 +19,9 @@ from django.http import HttpResponseRedirect
 from inspections import views
 
 urlpatterns = [
-    path('', lambda request: HttpResponseRedirect('login/')),  # Redirect root to step1
-    path('login/', views.login, name='login'),
-    path('signup/', views.signup, name='signup'),
+    path('', lambda request: HttpResponseRedirect('login/')),
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.signup_view, name='signup'),
     path('step1/', views.step1, name='step1'),
     path('menu/', views.menu, name='menu'),
     path('step2/', views.step2, name='step2'),
