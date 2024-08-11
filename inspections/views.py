@@ -539,12 +539,14 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        
-        if verify_login(username, password):
-            return redirect('step1')
+        user = User.objects.get(username=username)
+        if password == user.password:
+            if user.user_type == 'service_person':
+                return redirect('step1')
+            else:
+                return redirect('step1_cust')
         else:
             return render(request, 'inspections/login.html', {'error': 'Invalid credentials'})
-
     return render(request, 'inspections/login.html')
 
 def verify_login(username, password):
@@ -565,12 +567,13 @@ def signup_view(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
-
+        user_type = request.POST.get('user_type')
+        print(request.POST)
         if password != confirm_password:
             return render(request, 'inspections/signup.html', {'error': 'Passwords do not match'})
 
         if verify_signup(username, email, password):
-            save_signup_data(username,password,email)
+            save_signup_data(username, password, email, user_type)
             return redirect('step1')
         else:
             return render(request, 'inspections/signup.html', {'error': 'Invalid credentials'})
@@ -584,10 +587,10 @@ def verify_signup(username, email, password):
 
 
 
-def save_signup_data(username,password,email):
-        # Save data to MongoDB
-        inspection = User(username=username, password=password, email=email)
-        inspection.save()
+def save_signup_data(username, password, email, user_type):
+    # Save data to the database using Django's ORM
+    user = User(username=username, password=password, email=email, user_type=user_type)
+    user.save()
 
         
 

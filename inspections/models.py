@@ -54,9 +54,16 @@ class BrakeInspection(models.Model):
     brake_summary = models.TextField()
 
 class User(models.Model):
+    USER_TYPE_CHOICES = [
+        ('customer', 'Customer'),
+        ('service_person', 'Service Person'),
+    ]
+    
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)  # You should hash passwords in a real application
+    password = models.CharField(max_length=128)
+    user_type = models.CharField(max_length=15, choices=USER_TYPE_CHOICES) # You should hash passwords in a real application
+    
 
 
     def _str_(self):
