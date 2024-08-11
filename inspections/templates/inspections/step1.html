@@ -179,7 +179,7 @@
             <canvas id="signature-pad" width="400" height="200"></canvas>
             <input type="hidden" name="signature" id="signature-input">
             <button type="button" onclick="saveSignature()">Save Signature</button>
-            <button type="submit">Next</button>
+            <button type="button" onclick="submitInspection()">Next</button>
         </div>
     </form>
 
@@ -329,6 +329,57 @@
             var signatureInput = document.getElementById('signature-input');
             signatureInput.value = canvas.toDataURL();
         }
+
+        async function submitInspection() {
+            // Call saveInspectionData function before navigating
+            await saveInspectionData();
+
+            // After successful saving, submit the form to navigate to the next page
+            document.getElementById('inspection-form').submit();
+        }
+        
+
+        async function saveInspectionData() {
+    // Prepare the data to send to the backend
+    const modelNumber = document.getElementById('model-number').innerText;
+    const serialNumber = document.getElementById('serial-number').innerText;
+    const latitude = document.getElementById('latitude').innerText;
+    const longitude = document.getElementById('longitude').innerText;
+    const dateTime = document.getElementById('date-time').innerText;
+    const signature = document.getElementById('signature-input').value;
+
+    const inspectionData = {
+        model_number: modelNumber,
+        serial_number: serialNumber,
+        latitude: latitude,
+        longitude: longitude,
+        date_time: dateTime,
+        signature: signature,
+    };
+
+    try {
+        const response = await fetch("{% url 'save_inspection_data' %}", {
+            method: 'POST',
+            body: JSON.stringify(inspectionData),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const responseData = await response.json();
+        console.log('Response:', responseData);
+
+        if (response.ok) {
+            console.log('Data saved successfully.');
+        } else {
+            console.error('Failed to save data.', responseData);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
     </script>
 </body>
 
