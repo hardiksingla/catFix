@@ -51,5 +51,6 @@ urlpatterns = [
     path('submit_exterior_data/', views.submit_exterior_data, name='submit_exterior_data'),
     path('submit_brake_data/', views.submit_brake_data, name='submit_brake_data'),
     path('submit_engine_data/', views.submit_engine_data, name='submit_engine_data'),
+    path('save_inspection_data/', views.save_inspection_data, name='save_inspection_data'),
 ]
 
