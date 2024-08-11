@@ -14,9 +14,9 @@
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
             border-left: 5px solid #FFCC00;
@@ -24,18 +24,21 @@
 
         label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #000000;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
         }
 
         input[type="file"] {
             margin-bottom: 20px;
             font-size: 16px;
-            color: #000000;
-            border: 2px solid #000000;
-            padding: 5px;
+            color: #495057;
+            border: 2px solid #ced4da;
+            padding: 8px;
             border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
         }
 
         img {
@@ -45,58 +48,68 @@
             height: auto;
             border-radius: 8px;
             border: 2px solid #FFCC00;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button[type="button"] {
             background-color: #FFCC00;
-            color: #000000;
+            color: #343a40;
         }
 
         button:hover {
-            background-color: #FFCC00;
-            color: #000000;
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button[type="button"]:hover {
-            background-color: #000000;
+            background-color: #343a40;
             color: #ffffff;
         }
 
-    #extracted-text,
-    #date-time,
-    #location,
-    #barcode-info {
-        margin-top: 20px;
-        font-size: 16px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-left: 5px solid #FFCC00;
-        border-radius: 8px;
-        color: #000000;
-    }
+        #extracted-text,
+        #date-time,
+        #location,
+        #barcode-info {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #FFCC00;
+            border-radius: 8px;
+            color: #212529;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Added space above the Next button */
+        .next-button-container {
+            margin-top: 30px;
+        }
 
         /* Header Styles */
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
@@ -110,12 +123,12 @@
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
@@ -139,7 +152,7 @@
         {% csrf_token %}
 
         <!-- Image Upload Field -->
-        <label for="image">Upload Image:</label>
+        <label for="image">Upload Image of Machine ID Plate:</label>
         <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
 
         <!-- Image Preview -->
@@ -150,15 +163,17 @@
         <!-- Process Button -->
         <button type="button" onclick="processImage()">Process</button>
 
-    <!-- Display Detected Barcode String -->
-    <div id="extracted-text" style = "display: none;"></div>
-    <div id="barcode-info" style="margin-top: 20px;">
-        <p>Model Number: <span id="model-number"></span></p>
-        <p>Serial Number: <span id="serial-number"></span></p>
-    </div>
+        <!-- Display Detected Barcode String -->
+        <div id="extracted-text" style="display: none;"></div>
+        <div id="barcode-info" style="margin-top: 20px;">
+            <p>Model Number: <span id="model-number"></span></p>
+            <p>Serial Number: <span id="serial-number"></span></p>
+        </div>
 
         <!-- Display Date and Time -->
-        <div id="date-time"></div>
+        <div id="date-time">
+            <p>Date and Time: <span id="date-time-placeholder"></span></p>
+        </div>
 
         <!-- Display Location -->
         <div id="location">
@@ -166,15 +181,14 @@
             <p>Longitude: <span id="longitude"></span></p>
         </div>
 
-        <!-- Signature Pad -->
-        <div>
+        <!-- Next Button with added space above -->
+        <div class="next-button-container">
             <button type="submit">Next</button>
         </div>
 
     </form>
 
     <script>
-        
         // Function to Preview Image
         function previewImage(event) {
             const imagePreview = document.getElementById('image-preview');
@@ -211,21 +225,21 @@
                 }
             });
 
-        if (response.ok) {
-            const result = await response.json();
-            document.getElementById('extracted-text').innerText = result.text;
+            if (response.ok) {
+                const result = await response.json();
+                document.getElementById('extracted-text').innerText = result.text;
 
-            // Extract and display Model Number and Serial Number
-            const extractedText = result.text.trim();
-            const modelNumber = extractedText.slice(3, 10);  // Assuming the model number is fixed length
-            const serialNumber = extractedText.slice(10);     // Remaining part is the serial number
+                // Extract and display Model Number and Serial Number
+                const extractedText = result.text.trim();
+                const modelNumber = extractedText.slice(3, 10);  // Assuming the model number is fixed length
+                const serialNumber = extractedText.slice(10);     // Remaining part is the serial number
 
-            document.getElementById('model-number').innerText = modelNumber || 'N/A';
-            document.getElementById('serial-number').innerText = serialNumber || 'N/A';
+                document.getElementById('model-number').innerText = modelNumber || 'N/A';
+                document.getElementById('serial-number').innerText = serialNumber || 'N/A';
 
                 // Display current date and time
                 const now = new Date();
-                document.getElementById('date-time').innerText = `Date and Time: ${now.toLocaleString()}`;
+                document.getElementById('date-time-placeholder').innerText = `${now.toLocaleString()}`;
 
                 // Get and display current location
                 if (navigator.geolocation) {

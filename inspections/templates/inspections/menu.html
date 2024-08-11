@@ -12,76 +12,129 @@
             padding: 20px;
             background-color: #f4f4f4;
             color: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        }
+
+        .menu-heading {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000000;
         }
 
         .menu-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            max-width: 600px;
+            max-width: 800px;
             margin: auto;
         }
 
         .menu-item {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             border-left: 5px solid #FFCC00;
-            cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: #000000;
+            text-decoration: none;
         }
 
         .menu-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
         }
 
         .menu-item img {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 10px;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 15px;
         }
 
         .menu-item p {
             margin: 0;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #000000;
+        }
+
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        header span {
+            color: #FFCC00;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .menu-container {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                font-size: 22px;
+            }
+
+            .menu-item {
+                padding: 20px;
+            }
+
+            .menu-item img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .menu-item p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <header>
+        CAT<span>FIX</span>
+    </header>
 
     <div class="menu-container">
         <a href="{% url 'step2' %}" class="menu-item">
-            <img src="https://img.icons8.com/?size=100&id=15173&format=png&color=000000" alt="Tires Icon">
+            <img src="https://www.haiangroup.com/uploadfile/202003/20/495856d5a45678d23d80ae0e92fa0193_small.jpg" alt="Tires Icon">
             <p>Tires</p>
         </a>
         <a href="{% url 'step3' %}" class="menu-item">
-            <img src="https://img.icons8.com/fluency/66/000000/car-battery.png" alt="Battery Icon">
+            <img src="https://5.imimg.com/data5/GS/OW/GLADMIN-3825420/general-service-line-batteries-500x500.jpg" alt="Battery Icon">
             <p>Battery</p>
         </a>
         <a href="{% url 'step4' %}" class="menu-item">
-            <img src="https://img.icons8.com/color/66/000000/car.png" alt="Exterior Icon">
+            <img src="https://www.wyomingcat.com/wp-content/uploads/2021/06/articulated-truck-icon.jpg" alt="Exterior Icon">
             <p>Exterior</p>
         </a>
         <a href="{% url 'step5' %}" class="menu-item">
-            <img src="https://img.icons8.com/?size=100&id=VqEB76ezChzF&format=png&color=000000" alt="Brakes Icon">
+            <img src="https://www.speedyapollo.ca/wp-content/uploads/2019/04/blog-brake-pads.jpg" alt="Brakes Icon">
             <p>Brakes</p>
         </a>
         <a href="{% url 'step6' %}" class="menu-item">
-            <img src="https://img.icons8.com/fluency/66/000000/engine.png" alt="Engine Icon">
+            <img src="https://s7d2.scene7.com/is/image/Caterpillar/CM20200618-3f612-95c79" alt="Engine Icon">
             <p>Engine</p>
         </a>
+        <a href="{% url 'settings' %}" class="menu-item">
+            <img src="https://caterpillar.scene7.com/is/image/Caterpillar/CM20210426-2536a-6d076?$pcc-pdp2$" alt="Settings Icon">
+            <p>Settings</p>
+        </a>
     </div>
-
 </body>
 
 </html>

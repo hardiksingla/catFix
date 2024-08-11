@@ -14,9 +14,9 @@
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
             border-left: 5px solid #FFCC00;
@@ -25,31 +25,34 @@
         h3 {
             color: #FFCC00;
             margin-top: 20px;
+            font-weight: 600;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button#start-recording {
             background-color: #FFCC00;
-            color: #000000;
+            color: #343a40;
             margin-right: 10px;
         }
 
         button#start-recording:hover,
         button#stop-recording:hover,
-        button#next-button:hover {
-            background-color: #FFCC00;
-            color: #000000;
+        button#submit-button:hover {
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button:disabled {
@@ -59,7 +62,7 @@
         }
 
         #captured-text,
-        #summarized-text {
+        #summary-text {
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -69,52 +72,113 @@
             min-height: 50px;
         }
 
-        #captured-text {
-            margin-bottom: 20px;
-        }
-
         .tire-info {
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
             border-left: 5px solid #FFCC00;
             border-radius: 8px;
             color: #000000;
         }
 
+        .tire-info div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tire-info label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .tire-info input {
+            flex: 2;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            max-width: 40%;
+        }
+
+        #tire-summary {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            min-height: 90px;
+        }
+
+        .image-upload {
+            margin-top: 20px;
+        }
+
+        .image-upload label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .image-upload input[type="file"] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 5px;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
+        }
+
         /* Header Styles */
         header {
-            background-color: #000000;
+            background-color: #343a40;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
             color: #FFCC00;
         }
 
-        /* Responsive Design */
+        /* Mobile Responsive Design */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
                 padding: 10px;
                 font-size: 14px;
+            }
+
+            .tire-info div {
+                flex-direction: column;
+            }
+
+            .tire-info label {
+                margin-bottom: 5px;
+            }
+
+            .tire-info input {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #tire-summary {
+                padding: 10px;
             }
         }
     </style>
@@ -125,7 +189,7 @@
         CAT<span>FIX</span>
     </header>
 
-    <form method="post">
+    <form id="tire-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div>
             <button type="button" id="start-recording">Start Recording</button>
@@ -135,10 +199,60 @@
             <h3>Captured Text:</h3>
             <p id="captured-text">Start speaking to capture text...</p>
         </div>
+
         <div class="tire-info">
-            <p><span id="tire-summary"></span></p>
+            <h3>Tire Information:</h3>
+            <div>
+                <label>▪ Tire Pressure for Left Front:</label>
+                <input type="text" id="pressure-left-front" name="pressure-left-front">
+            </div>
+            <div>
+                <label>▪ Tire Pressure for Right Front:</label>
+                <input type="text" id="pressure-right-front" name="pressure-right-front">
+            </div>
+            <div>
+                <label>▪ Tire Condition for Left Front:</label>
+                <input type="text" id="condition-left-front" name="condition-left-front">
+            </div>
+            <div>
+                <label>▪ Tire Condition for Right Front:</label>
+                <input type="text" id="condition-right-front" name="condition-right-front">
+            </div>
+            <div>
+                <label>▪ Tire Pressure for Left Rear:</label>
+                <input type="text" id="pressure-left-rear" name="pressure-left-rear">
+            </div>
+            <div>
+                <label>▪ Tire Pressure for Right Rear:</label>
+                <input type="text" id="pressure-right-rear" name="pressure-right-rear">
+            </div>
+            <div>
+                <label>▪ Tire Condition for Left Rear:</label>
+                <input type="text" id="condition-left-rear" name="condition-left-rear">
+            </div>
+            <div>
+                <label>▪ Tire Condition for Right Rear:</label>
+                <input type="text" id="condition-right-rear" name="condition-right-rear">
+            </div>
+            <div>
+                <label>▪ Overall Tire Summary:</label>
+                <textarea id="tire-summary" name="tire-summary" rows="4"></textarea>
+            </div>
         </div>
-        <button type="submit" id="next-button" disabled>Next</button>
+
+        <div class="image-upload">
+            <h3>Upload Images:</h3>
+            <label for="image-left-front">Left Front Tire:</label>
+            <input type="file" id="image-left-front" name="image-left-front" accept="image/*">
+            <label for="image-right-front">Right Front Tire:</label>
+            <input type="file" id="image-right-front" name="image-right-front" accept="image/*">
+            <label for="image-left-rear">Left Rear Tire:</label>
+            <input type="file" id="image-left-rear" name="image-left-rear" accept="image/*">
+            <label for="image-right-rear">Right Rear Tire:</label>
+            <input type="file" id="image-right-rear" name="image-right-rear" accept="image/*">
+        </div>
+
+        <button type="button" id="submit-button" disabled>Submit</button>
     </form>
 
     <script>
@@ -215,20 +329,90 @@
                 .then(response => response.json())
                 .then(data => {
                     populateTireInfo(data.summary);
-                    document.getElementById('next-button').disabled = false;
+                    document.getElementById('submit-button').disabled = false;
                 })
                 .catch(error => console.error('Error:', error));
         }
 
         function populateTireInfo(summary) {
-            document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
+            const tireInfo = extractTireInfo(summary);
+            document.getElementById('pressure-left-front').value = tireInfo.pressureLeftFront;
+            document.getElementById('pressure-right-front').value = tireInfo.pressureRightFront;
+            document.getElementById('condition-left-front').value = tireInfo.conditionLeftFront;
+            document.getElementById('condition-right-front').value = tireInfo.conditionRightFront;
+            document.getElementById('pressure-left-rear').value = tireInfo.pressureLeftRear;
+            document.getElementById('pressure-right-rear').value = tireInfo.pressureRightRear;
+            document.getElementById('condition-left-rear').value = tireInfo.conditionLeftRear;
+            document.getElementById('condition-right-rear').value = tireInfo.conditionRightRear;
+            document.getElementById('tire-summary').value = tireInfo.overallSummary;
         }
 
-        function extractInfo(text, label) {
-            const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
-            const match = text.match(regex);
-            return match ? match[1].trim() : '';
+        function extractTireInfo(summary) {
+            const regexes = {
+                pressureLeftFront: /Tire Pressure for Left Front:\s*([^\n]*)/,
+                pressureRightFront: /Tire Pressure for Right Front:\s*([^\n]*)/,
+                conditionLeftFront: /Tire Condition for Left Front:\s*([^\n]*)/,
+                conditionRightFront: /Tire Condition for Right Front:\s*([^\n]*)/,
+                pressureLeftRear: /Tire Pressure for Left Rear:\s*([^\n]*)/,
+                pressureRightRear: /Tire Pressure for Right Rear:\s*([^\n]*)/,
+                conditionLeftRear: /Tire Condition for Left Rear:\s*([^\n]*)/,
+                conditionRightRear: /Tire Condition for Right Rear:\s*([^\n]*)/,
+                overallSummary: /Overall Tire Summary:\s*([^\n]*)/,
+            };
+
+            const tireInfo = {};
+            for (const key in regexes) {
+                const match = summary.match(regexes[key]);
+                tireInfo[key] = match ? match[1].trim() : '';
+            }
+            return tireInfo;
         }
+
+        document.getElementById('submit-button').onclick = function () {
+            const formData = new FormData(document.getElementById('tire-form'));
+
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            if (!apiKey) {
+                console.error('API key not found.');
+                alert('Please set up your Gemini API key in the settings page.');
+                return;
+            }
+
+            formData.append('api_key', apiKey);
+
+            // Convert images to base64 and append to form data
+            const imageFields = ['image-left-front', 'image-right-front', 'image-left-rear', 'image-right-rear'];
+            imageFields.forEach(field => {
+                const fileInput = document.getElementById(field);
+                if (fileInput.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        formData.append(field, event.target.result);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            });
+
+            // Submit the form data
+            fetch("{% url 'submit_tire_data' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Data submitted successfully!');
+                        window.location.href = "{% url 'menu' %}";
+                    } else {
+                        alert('Failed to submit data.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        };
     </script>
 </body>
 

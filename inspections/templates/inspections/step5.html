@@ -14,9 +14,9 @@
 
         form {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             margin: auto;
             border-left: 5px solid #FFCC00;
@@ -25,31 +25,34 @@
         h3 {
             color: #FFCC00;
             margin-top: 20px;
+            font-weight: 600;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             font-size: 16px;
+            font-weight: 600;
             color: #ffffff;
-            background-color: #000000;
+            background-color: #343a40;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
         }
 
         button#start-recording {
             background-color: #FFCC00;
-            color: #000000;
+            color: #343a40;
             margin-right: 10px;
         }
 
         button#start-recording:hover,
         button#stop-recording:hover,
-        button#next-button:hover {
-            background-color: #FFCC00;
-            color: #000000;
+        button#submit-button:hover {
+            background-color: #FFC107;
+            color: #343a40;
         }
 
         button:disabled {
@@ -59,7 +62,7 @@
         }
 
         #captured-text,
-        #summarized-text {
+        #summary-text {
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
@@ -69,52 +72,113 @@
             min-height: 50px;
         }
 
-        #captured-text {
-            margin-bottom: 20px;
-        }
-
-        .tire-info {
+        .brake-info {
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
             border-left: 5px solid #FFCC00;
             border-radius: 8px;
             color: #000000;
         }
 
+        .brake-info div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .brake-info label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .brake-info input {
+            flex: 2;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            max-width: 40%;
+        }
+
+        #brake-summary {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            min-height: 90px;
+        }
+
+        .image-upload {
+            margin-top: 20px;
+        }
+
+        .image-upload label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .image-upload input[type="file"] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 5px;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
+        }
+
         /* Header Styles */
         header {
             background-color: #000000;
             color: #ffffff;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
         }
 
         header span {
             color: #FFCC00;
         }
 
-        /* Responsive Design */
+        /* Mobile Responsive Design */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
 
             form {
-                padding: 15px;
+                padding: 20px;
                 border-left: none;
             }
 
             header {
-                font-size: 20px;
+                font-size: 22px;
             }
 
             button {
                 padding: 10px;
                 font-size: 14px;
+            }
+
+            .brake-info div {
+                flex-direction: column;
+            }
+
+            .brake-info label {
+                margin-bottom: 5px;
+            }
+
+            .brake-info input {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #brake-summary {
+                padding: 10px;
             }
         }
     </style>
@@ -125,21 +189,51 @@
         CAT<span>FIX</span>
     </header>
 
-<form method="post">
-    {% csrf_token %}
-    <div>
-        <button type="button" id="start-recording">Start Recording</button>
-        <button type="button" id="stop-recording" disabled>Stop Recording</button>
-    </div>
-    <div>
-        <h3>Captured Text:</h3>
-        <p id="captured-text">Start speaking to capture text...</p>
-    </div>
-    <div class="tire-info">
-        <p><span id="tire-summary"></span></p>
-    </div>
-    <button type="submit" id="next-button" disabled>Next</button>
-</form>
+    <form id="brake-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <button type="button" id="start-recording">Start Recording</button>
+            <button type="button" id="stop-recording" disabled>Stop Recording</button>
+        </div>
+        <div>
+            <h3>Captured Text:</h3>
+            <p id="captured-text">Start speaking to capture text...</p>
+        </div>
+
+        <div class="brake-info">
+            <h3>Brake Information:</h3>
+            <div>
+                <label>▪ Brake Fluid Level:</label>
+                <input type="text" id="brake-fluid-level" name="brake-fluid-level">
+            </div>
+            <div>
+                <label>▪ Brake Condition for Front:</label>
+                <input type="text" id="brake-condition-front" name="brake-condition-front">
+            </div>
+            <div>
+                <label>▪ Brake Condition for Rear:</label>
+                <input type="text" id="brake-condition-rear" name="brake-condition-rear">
+            </div>
+            <div>
+                <label>▪ Emergency Brake:</label>
+                <input type="text" id="emergency-brake" name="emergency-brake">
+            </div>
+            <div>
+                <label>▪ Brake Overall Summary:</label>
+                <textarea id="brake-summary" name="brake-summary" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="image-upload">
+            <h3>Upload Images:</h3>
+            <label for="image-brake-front">Front Brake:</label>
+            <input type="file" id="image-brake-front" name="image-brake-front" accept="image/*">
+            <label for="image-brake-rear">Rear Brake:</label>
+            <input type="file" id="image-brake-rear" name="image-brake-rear" accept="image/*">
+        </div>
+
+        <button type="button" id="submit-button" disabled>Submit</button>
+    </form>
 
     <script>
         let finalTranscript = '';
@@ -167,7 +261,7 @@
                     recognition.stop();
                     document.getElementById('start-recording').disabled = false;
                     document.getElementById('stop-recording').disabled = true;
-                    sendToGemini(finalTranscript);
+                    gemini_summarize_brake(finalTranscript);
                 }
             };
 
@@ -176,7 +270,7 @@
             };
 
             recognition.onend = function () {
-                sendToGemini(finalTranscript);
+                gemini_summarize_brake(finalTranscript);
             };
         } else {
             alert('Your browser does not support Speech Recognition.');
@@ -195,32 +289,102 @@
             document.getElementById('stop-recording').disabled = true;
         };
 
-        function sendToGemini(text) {
-            fetch("{% url 'gemini_summarize_api' %}", {
+        function gemini_summarize_brake(text) {
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            if (!apiKey) {
+                console.error('API key not found.');
+                alert('Please set up your Gemini API key in the settings page.');
+                return;
+            }
+
+            fetch("{% url 'gemini_summarize_brake' %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}',
                 },
-                body: JSON.stringify({ text: text }),
+                body: JSON.stringify({ text: text, api_key: apiKey }),  // Send text and API key
             })
                 .then(response => response.json())
                 .then(data => {
-                    populateTireInfo(data.summary);
-                    document.getElementById('next-button').disabled = false;
+                    populateBrakeInfo(data.summary);
+                    document.getElementById('submit-button').disabled = false;
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-    function populateTireInfo(summary) {
-        document.getElementById('tire-summary').innerText = summary.slice(0, 1000);
-    }
-
-        function extractInfo(text, label) {
-            const regex = new RegExp(`${label}:?\\s*(.*?)(?=(\\s*Tire|\\s*$))`, 'i');
-            const match = text.match(regex);
-            return match ? match[1].trim() : '';
+        function populateBrakeInfo(summary) {
+            const brakeInfo = extractBrakeInfo(summary);
+            document.getElementById('brake-fluid-level').value = brakeInfo.brakeFluidLevel;
+            document.getElementById('brake-condition-front').value = brakeInfo.brakeConditionFront;
+            document.getElementById('brake-condition-rear').value = brakeInfo.brakeConditionRear;
+            document.getElementById('emergency-brake').value = brakeInfo.emergencyBrake;
+            document.getElementById('brake-summary').value = brakeInfo.overallSummary;
         }
+
+        function extractBrakeInfo(summary) {
+            const regexes = {
+                brakeFluidLevel: /Brake Fluid level:\s*([^\n]*)/,
+                brakeConditionFront: /Brake Condition for Front:\s*([^\n]*)/,
+                brakeConditionRear: /Brake Condition for Rear:\s*([^\n]*)/,
+                emergencyBrake: /Emergency Brake:\s*([^\n]*)/,
+                overallSummary: /Brake Overall Summary:\s*([^\n]*)/,
+            };
+
+            const brakeInfo = {};
+            for (const key in regexes) {
+                const match = summary.match(regexes[key]);
+                brakeInfo[key] = match ? match[1].trim() : '';
+            }
+            return brakeInfo;
+        }
+
+        document.getElementById('submit-button').onclick = function () {
+            const formData = new FormData(document.getElementById('brake-form'));
+
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            if (!apiKey) {
+                console.error('API key not found.');
+                alert('Please set up your Gemini API key in the settings page.');
+                return;
+            }
+
+            formData.append('api_key', apiKey);
+
+            // Convert images to base64 and append to form data
+            const imageFields = ['image-brake-front', 'image-brake-rear'];
+            imageFields.forEach(field => {
+                const fileInput = document.getElementById(field);
+                if (fileInput.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        formData.append(field, event.target.result);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            });
+
+            // Submit the form data
+            fetch("{% url 'submit_brake_data' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Data submitted successfully!');
+                        window.location.href = "{% url 'menu' %}";
+                    } else {
+                        alert('Failed to submit data.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        };
     </script>
 </body>
 

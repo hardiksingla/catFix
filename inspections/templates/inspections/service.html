@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #000000;
+        }
+
+        .container {
+            padding: 20px;
+            margin: auto;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #FFCC00;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #000000;
+        }
+
+        .service-item {
+            border: 1px solid #000000;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+        }
+
+        .service-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .service-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #000000;
+        }
+
+        .service-item p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333333;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #FFCC00;
+            color: #000000;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        header span {
+            color: #FFCC00;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .container {
+                padding: 15px;
+                width: 90vw;
+            }
+
+            header {
+                font-size: 22px;
+                width: 90vw;
+            }
+
+            .service-item h3 {
+                font-size: 16px;
+            }
+
+            .service-item p {
+                font-size: 14px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        CAT<span>FIX</span>
+    </header>
+
+    <div class="container">
+        <form method="post" action="{% url 'step1_cust' %}">
+            {% csrf_token %}
+            <h2>Service Schedule for CAT Machines</h2>
+
+            <div class="service-item">
+                <h3>Engine Oil / Filter</h3>
+                <p><strong>Time Interval:</strong> 500 Hours</p>
+                <p><strong>No. of Hours Used:</strong> 450 Hours</p>
+                <p><strong>Expected Date of Service:</strong> 01/12/2024</p>
+                <p><strong>Machine Serial Number:</strong> B1L</p>
+            </div>
+
+            <div class="service-item">
+                <h3>Transmission Oil Filter</h3>
+                <p><strong>Time Interval:</strong> 500 Hours</p>
+                <p><strong>No. of Hours Used:</strong> 480 Hours</p>
+                <p><strong>Expected Date of Service:</strong> 01/12/2024</p>
+                <p><strong>Machine Serial Number:</strong> B1M</p>
+            </div>
+
+            <div class="service-item">
+                <h3>Hydraulic System Filter</h3>
+                <p><strong>Time Interval:</strong> 1000 Hours</p>
+                <p><strong>No. of Hours Used:</strong> 920 Hours</p>
+                <p><strong>Expected Date of Service:</strong> 15/02/2024</p>
+                <p><strong>Machine Serial Number:</strong> B1W</p>
+            </div>
+
+            <div class="service-item">
+                <h3>Brake System Oil</h3>
+                <p><strong>Time Interval:</strong> 2000 Hours</p>
+                <p><strong>No. of Hours Used:</strong> 1800 Hours</p>
+                <p><strong>Expected Date of Service:</strong> 10/03/2024</p>
+                <p><strong>Machine Serial Number:</strong> B1N</p>
+            </div>
+
+            <div class="service-item">
+                <h3>Coolant Extender</h3>
+                <p><strong>Time Interval:</strong> 3000 Hours</p>
+                <p><strong>No. of Hours Used:</strong> 2700 Hours</p>
+                <p><strong>Expected Date of Service:</strong> 20/04/2024</p>
+                <p><strong>Machine Serial Number:</strong> B1P</p>
+            </div>
+
+            <button type="submit">Schedule a Service</button>
+        </form>
+    </div>
+</body>
+
+</html>
