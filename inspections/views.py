@@ -159,18 +159,13 @@ def process_image(request):
         else:
             return JsonResponse({'error': 'No image provided'}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
-logger = logging.getLogger(__name__)
 @csrf_exempt 
 def save_inspection_data(request):
     if request.method == 'POST':
         try:
-            # Log the raw body for debugging
-            logger.debug(f"Raw request body: {request.body.decode('utf-8')}")
-            
             # Parse JSON data from the request body
             inspection_data = json.loads(request.body)
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}")
+        except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
         if inspection_data:
@@ -181,11 +176,7 @@ def save_inspection_data(request):
             date_time = inspection_data.get('date_time')
             signature = inspection_data.get('signature')
 
-            # Log the parsed data for debugging
-            logger.debug(f"Parsed inspection data: {inspection_data}")
-
-            # Your database saving logic here...
-            
+            # Save the data to your database
             inspection = Inspection(
                 customer_name="Sample Customer",  # Replace with actual data or retrieve from request
                 customer_id="12345",              # Replace with actual data or retrieve from request
@@ -197,16 +188,12 @@ def save_inspection_data(request):
                 signature=signature
             )
             inspection.save()
-            
-            # Clear the session data if needed
-            # del request.session['inspection_data']
 
             return JsonResponse({'status': 'success'})
         else:
             return JsonResponse({'error': 'No inspection data found'}, status=400)
+
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
 @csrf_exempt  # This will exempt this view from CSRF validation, which might be necessary for API endpoints
 def gemini_summarize_api(request):
     if request.method == 'POST':
