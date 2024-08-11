@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import ImageForm, SignatureForm, TextForm
-from .models import Inspection
+from .models import BrakeInspection, ExteriorInspection, Inspection
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +13,8 @@ import google.generativeai as genai
 import tempfile
 import datetime
 import logging
+from .models import User , TyreInspection , BatteryInspection
+
 def step1(request):
     form = ImageForm()
     return render(request, 'inspections/step1.html', {'form': form})
@@ -247,6 +249,7 @@ def gemini_summarize_api(request):
                 return JsonResponse({'error': 'NOT RELEVANT TEXT'}, status=400)
             elif response:
                 summary = response.text
+                saveTyreData(text, summary)
                 return JsonResponse({'summary': summary})
             else:
                 return JsonResponse({'error': 'Failed to generate summary'}, status=500)
@@ -261,8 +264,15 @@ def gemini_summarize_api(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+def saveTyreData(text, summary):
+    print(summary)
+    
+    # data = TyreInspection()
+    pass
+
 @csrf_exempt  # Exempt this view from CSRF validation
 def gemini_summarize_battery(request):
+    print("Inside gemini_summarize_battery")
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -585,7 +595,7 @@ def verify_signup(username, email, password):
 
 
 
-from .models import User
+
 
 def save_signup_data(username,password,email):
         # Save data to MongoDB
@@ -610,6 +620,18 @@ def submit_tire_data(request):
             condition_right_rear = request.POST.get('condition-right-rear')
             tire_summary = request.POST.get('tire-summary')
             api_key = request.POST.get('api_key')
+            
+            tyre_inspection = TyreInspection.objects.create(
+            left_front_pressure=pressure_left_front,
+            right_front_pressure=pressure_right_front,
+            left_front_condition=condition_left_front,
+            right_front_condition=condition_right_front,
+            left_rear_pressure=pressure_left_rear,
+            right_rear_pressure=pressure_right_rear,
+            left_rear_condition=condition_left_rear,
+            right_rear_condition=condition_right_rear,
+            overall_summary=tire_summary
+            )
 
             images = {
                 'left_front': request.POST.get('image-left-front'),
@@ -642,6 +664,16 @@ def submit_battery_data(request):
             leak_rust = request.POST.get('leak-rust')
             overall_summary = request.POST.get('battery-summary')
 
+            battery_inspection = BatteryInspection.objects.create(
+            battery_make=battery_make,
+            replacement_date=replacement_date,
+            voltage=voltage,
+            water_level=water_level,
+            condition_damage=damage,
+            leak_rust=leak_rust,
+            overall_summary=overall_summary
+        )
+            
             # Process images
             images = {
                 'damage_image': request.FILES.get('image-damage'),
@@ -669,6 +701,12 @@ def submit_exterior_data(request):
             exterior_summary = request.POST.get('exterior-summary')
             api_key = request.POST.get('api_key')
 
+            exterior_inspection = ExteriorInspection.objects.create(
+            rust_damage=rust_damage,
+            oil_leak=oil_leak,
+            exterior_summary=exterior_summary
+        )
+            
             images = {
                 'rust_damage': request.POST.get('image-rust-damage'),
                 'oil_leak': request.POST.get('image-oil-leak')
@@ -696,6 +734,14 @@ def submit_brake_data(request):
             brake_summary = request.POST.get('brake-summary')
             api_key = request.POST.get('api_key')
 
+            brake_inspection = BrakeInspection.objects.create(
+            brake_fluid_level=brake_fluid_level,
+            brake_condition_front=brake_condition_front,
+            brake_condition_rear=brake_condition_rear,
+            emergency_brake=emergency_brake,
+            brake_summary=brake_summary
+        )
+            
             images = {
                 'front_brake': request.POST.get('image-brake-front'),
                 'rear_brake': request.POST.get('image-brake-rear')
