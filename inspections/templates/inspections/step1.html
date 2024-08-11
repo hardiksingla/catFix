@@ -387,16 +387,12 @@
             }
         });
 
-        const responseData = await response.json();
-        console.log('Response:', responseData);
-
-        if (response.ok) {
-            console.log('Data saved successfully.');
-        } else {
-            console.error('Failed to save data.', responseData);
+        if (!response.ok) {
+            const responseData = await response.json();
+            // Handle the error appropriately here
         }
     } catch (error) {
-        console.error('Error:', error);
+        // Handle the error appropriately here
     }
 }
 

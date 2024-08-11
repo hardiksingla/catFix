@@ -87,13 +87,13 @@ DATABASES = {
         'ENGINE': 'djongo',
         'NAME': 'fixit',  # This is the database name you want to use
         'CLIENT': {
-            'host': 'mongodb+srv://07hardiksingla:HtN8hSboxTYmdetV@cluster0.wuvbh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-            'username': '07hardiksingla',
-            'password': 'HtN8hSboxTYmdetV',
+            'host': 'mongodb+srv://ishanvisita:0jymL1uhDLSI7VoC@cluster0.pci0c.mongodb.net/fixit?retryWrites=true&w=majority&appName=Cluster0',
+            'username': 'ishanvisita',  # MongoDB Atlas username
+            'password': '0jymL1uhDLSI7VoC',  # MongoDB Atlas password
             'authSource': 'admin',
             'authMechanism': 'SCRAM-SHA-1',
-        }
-    }
+}
+}
 }
 
 # Password validation
